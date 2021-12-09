@@ -1,3 +1,12 @@
+composer.lock
+
+.idea/
+*.iml
+
+# coverage report
+/build
+
+.phpunit.*
 composer.phar
 /vendor/
 

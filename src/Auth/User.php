@@ -45,37 +45,34 @@ class User
 
     public array $properties;
 
-    public AuthConfig $authConfig;
+    public static $authConfig;
 
     public function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName): void
     {
-        $authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName);
-        global $authConfig;
-        $this->authConfig =& $authConfig;
+        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName);
     }
 
     public function getUsers(): array
     {
-        $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", $this->authConfig->endpoint, $this->authConfig->organizationName, $this->authConfig->clientId, $this->authConfig->clientSecret);
-        $bytes = Util::getBytes($url);
-        $users = json_decode($bytes->__toString());
+        $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, self::$authConfig->clientId, self::$authConfig->clientSecret);
+        $stream = Util::getStream($url);
+        $users = json_decode($stream->__toString());
         return $users;
     }
 
-    public function getUser(string $name): self
+    public function getUser(string $name): array
     {
-        $url = sprintf("%s/api/get-user?id=%s/%s&clientId=%s&clientSecret=%s", $this->authConfig->endpoint, $this->authConfig->organizationName, $name, $this->authConfig->clientId, $this->authConfig->clientSecret);
-        $bytes = Util::getBytes($url);
-        $user = json_decode($bytes->__toString());
+        $url = sprintf("%s/api/get-user?id=%s/%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, $name, self::$authConfig->clientId, self::$authConfig->clientSecret);
+        $stream = Util::getStream($url);
+        $user = json_decode($stream->__toString(), true);
         return $user;
     }
 
     public function modifyUser(string $method, User $user): bool
     {
-        $authConfig = $GLOBALS['authConfig'];
-        $user->owner = $authConfig->organizationName;
+        $user->owner = self::$authConfig->organizationName;
     
-        $url = sprintf("%s/api/%s?id=%s/%s&clientId=%s&clientSecret=%s", $authConfig->Endpoint, $method, $user->owner, $user->name, $authConfig->clientId, $authConfig->clientSecret);
+        $url = sprintf("%s/api/%s?id=%s/%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, $method, $user->owner, $user->name, self::$authConfig->clientId, self::$authConfig->clientSecret);
         $userByte = json_encode($user);
         if ($userByte === false) {
             throw new CasdoorException("json_encode fails");
