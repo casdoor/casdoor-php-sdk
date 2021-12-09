@@ -15,12 +15,12 @@ use Psr\Http\Message\StreamInterface;
  */
 class Util
 {
-    public static function getBytes(string $url): StreamInterface
+    public static function getStream(string $url): StreamInterface
     {
         $client = new Client();
         $request = new Request('GET', $url);
-        $resp = $client->send($request);
-        $bytes = $resp->getBody();
-        return $bytes;
+        $response = $client->send($request);
+        $stream = $response->getBody();
+        return $stream;
     }
 }

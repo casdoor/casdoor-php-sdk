@@ -16,12 +16,13 @@ class Token
 {
     public function getOAuthToken(string $code, string $state): AccessTokenInterface
     {
-        $authConfig = $GLOBALS['authConfig'];
+        $authConfig = User::$authConfig;
         $provider = new GenericProvider([
             'clientId'                => $authConfig->clientId,
             'clientSecret'            => $authConfig->clientSecret,
             'urlAuthorize'            => sprintf("%s/api/login/oauth/authorize", $authConfig->endpoint),
             'urlAccessToken'          => sprintf("%s/api/login/oauth/access_token", $authConfig->endpoint),
+            'urlResourceOwnerDetails' => sprintf("%s/api/get-account", $authConfig->endpoint),
         ]);
         $accessToken = $provider->getAccessToken('authorization_code', ['code' => $code]);
         return $accessToken;

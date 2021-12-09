@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Casdoor\Auth;
 
-use Firebase\JWT\JWT as firebase_jwt;
-
 /**
  * Class Jwt.
  *
@@ -13,10 +11,17 @@ use Firebase\JWT\JWT as firebase_jwt;
  */
 class Jwt
 {
-    public function parseJwtToken(string $token): object
+    /**
+     * Parse json web token
+     *
+     * @param string $token
+     *
+     * @return array
+     */
+    public function parseJwtToken(string $token): array
     {
-        $authConfig = $GLOBALS['authConfig'];
-
-        return firebase_jwt::decode($token, $authConfig->jwtSecret, ['RS256']);
+        $res = base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token)[1])));
+        $res = json_decode($res, true);
+        return $res;
     }
 }
