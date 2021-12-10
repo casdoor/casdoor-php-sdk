@@ -7,6 +7,7 @@ namespace Casdoor\Auth;
 use Casdoor\Util\Util;
 use Casdoor\Exceptions\CasdoorException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 
 /**
@@ -68,40 +69,52 @@ class User
         return $user;
     }
 
-    public function modifyUser(string $method, User $user): bool
+    public function modifyUser(string $method, User $user): array
     {
         $user->owner = self::$authConfig->organizationName;
     
         $url = sprintf("%s/api/%s?id=%s/%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, $method, $user->owner, $user->name, self::$authConfig->clientId, self::$authConfig->clientSecret);
-        $userByte = json_encode($user);
-        if ($userByte === false) {
-            throw new CasdoorException("json_encode fails");
+        $strUser = json_encode($user);
+        if ($strUser === false) {
+            throw new CasdoorException('json_encode fails');
         }
     
         $client = new Client();
-        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8'], $userByte);
-        $resp = $client->send($request);
-        $respByte = $resp->getBody();
-        $response = json_decode($respByte->__toString());
-    
-        if ($response->data === "Affected") {
-            return true;
+        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8'], $strUser);
+        try {
+            $resp = $client->send($request);
+        } catch (GuzzleException $e) {
+            return [null, false];
         }
-        return false;
+        $respStream = $resp->getBody();
+        $response = json_decode($respStream->__toString());
+        if ($response->data === 'Affected') {
+            return [$response, true];
+        }
+        return [$response, false];
     }
 
     public function updateUser(User $user): bool
     {
-        return $this->modifyUser("update-user", $user);
+        list($response, $affected) = $this->modifyUser('update-user', $user);
+        return $affected;
     }
 
     public function addUser(User $user): bool
     {
-        return $this->modifyUser("add-user", $user);
+        list($response, $affected) = $this->modifyUser('add-user', $user);
+        return $affected;
     }
 
     public function deleteUser(User $user): bool
     {
-        return $this->modifyUser("delete-user", $user);
+        list($response, $affected) = $this->modifyUser('delete-user', $user);
+        return $affected;
+    }
+
+    public function checkUserPassword(User $user):bool
+    {
+        list($response, $affected) = $this->modifyUser('delete-user', $user);
+        return $response->status == 'ok';
     }
 }
