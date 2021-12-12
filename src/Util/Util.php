@@ -18,7 +18,7 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class Util
 {
-    public static function getStream(string $url): StreamInterface
+    public static function doGetStream(string $url): StreamInterface
     {
         $client = new Client();
         $request = new Request('GET', $url);
@@ -27,16 +27,23 @@ class Util
         return $stream;
     }
 
-    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig): stdClass
+    public static function getUrl(string $action, array $queryMap, $authConfig): string
     {
         $query = '';
         foreach ($queryMap as $k => $v) {
             $query .= sprintf('%s=%s&', $k, $v);
         }
+    
         $url = sprintf('%s/api/%s?%sclientId=%s&clientSecret=%s', $authConfig->endpoint, $action, $query, $authConfig->clientId, $authConfig->clientSecret);
+        return $url;
+    }
+
+    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig, $postData): stdClass
+    {
+        $url = self::getUrl($action, $queryMap, $authConfig);
 
         $client = new Client();
-        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8']);
+        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8'], $postData);
         try {
             $resp = $client->send($request);
         } catch (GuzzleException $e) {

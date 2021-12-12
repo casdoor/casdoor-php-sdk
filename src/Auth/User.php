@@ -55,43 +55,45 @@ class User
 
     public function getUsers(): array
     {
+        $queryMap = [
+            'owner' => self::$authConfig->organizationName
+        ];
+
+        $url = Util::getUrl('get-users', $queryMap, self::$authConfig);
+
         $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, self::$authConfig->clientId, self::$authConfig->clientSecret);
-        $stream = Util::getStream($url);
+        $stream = Util::doGetStream($url);
         $users = json_decode($stream->__toString());
         return $users;
     }
 
     public function getUser(string $name): array
     {
-        $url = sprintf("%s/api/get-user?id=%s/%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, $name, self::$authConfig->clientId, self::$authConfig->clientSecret);
-        $stream = Util::getStream($url);
+        $queryMap = [
+            'id' => sprintf('%s/%s', self::$authConfig->organizationName, $name),
+        ];
+
+        $url = Util::getUrl('get-user', $queryMap, self::$authConfig);
+
+        $stream = Util::doGetStream($url);
         $user = json_decode($stream->__toString(), true);
         return $user;
     }
 
-    public function modifyUser(string $method, User $user): array
+    public function modifyUser(string $action, User $user): array
     {
         $user->owner = self::$authConfig->organizationName;
-    
-        $url = sprintf("%s/api/%s?id=%s/%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, $method, $user->owner, $user->name, self::$authConfig->clientId, self::$authConfig->clientSecret);
-        $strUser = json_encode($user);
-        if ($strUser === false) {
+        $queryMap = [
+            'id' => sprintf('%s/%s', $user->owner, $user->name)
+        ];
+
+        $postData = json_encode($user);
+        if ($postData === false) {
             throw new CasdoorException('json_encode fails');
         }
-    
-        $client = new Client();
-        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8'], $strUser);
-        try {
-            $resp = $client->send($request);
-        } catch (GuzzleException $e) {
-            return [null, false];
-        }
-        $respStream = $resp->getBody();
-        $response = json_decode($respStream->__toString());
-        if ($response->data === 'Affected') {
-            return [$response, true];
-        }
-        return [$response, false];
+
+        $response = Util::doPost($action, $queryMap, self::$authConfig, $postData);
+        return [$response, $response->data === 'Affected'];
     }
 
     public function updateUser(User $user): bool
