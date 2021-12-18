@@ -21,6 +21,7 @@ class Resource
     {
         $queryMap = [
             'owner'        => $authConfig->organizationName,
+            'application'  => $authConfig->applicationName,
             'tag'          => $tag,
             'parent'       => $parent,
             'fullFilePath' => $fullFilePath,

@@ -24,30 +24,60 @@ class User
     public string $password;
     public string $displayName;
     public string $avatar;
+    public string $permanentAvatar;
     public string $email;
     public string $phone;
+    public string $location;
+    public array  $address;
     public string $affiliation;
+    public string $title;
+    public string $idCardType;
+    public string $idCard;
+    public string $homePage;
+    public string $bio;
     public string $tag;
+    public string $region;
     public string $language;
-    public int $score;
-    public bool $isAdmin;
-    public bool $isGlobalAdmin;
-    public bool $isForbidden;
+    public string $gender;
+    public string $brithday;
+    public string $education;
+    public int    $score;
+    public int    $ranking;
+    public bool   $isDefaultAvatar;
+    public bool   $isOnline;
+    public bool   $isAdmin;
+    public bool   $isGlobalAdmin;
+    public bool   $isForbidden;
+    public bool   $isDeleted;
+    public string $signupApplication;
     public string $hash;
     public string $preHash;
+
+    public string $createdIp;
+    public string $lastSigninTime;
+    public string $lastSigninIp;
 
     public string $github;
     public string $google;
     public string $qq;
     public string $wechat;
+    public string $facebook;
+    public string $dingtalk;
+    public string $weibo;
+    public string $gitee;
+    public string $linkedin;
+    public string $wecom;
+    public string $lark;
+    public string $gitlab;
 
-    public array $properties;
+    public string $ldap;
+    public array  $properties;
 
     public static $authConfig;
 
-    public function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName): void
+    public function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName, string $applicationName): void
     {
-        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName);
+        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
     }
 
     public function getUsers(): array
