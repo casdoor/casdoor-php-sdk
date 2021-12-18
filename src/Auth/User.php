@@ -6,9 +6,6 @@ namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
 use Casdoor\Exceptions\CasdoorException;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Request;
 
 /**
  * Class User.
