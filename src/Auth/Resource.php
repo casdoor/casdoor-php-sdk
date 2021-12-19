@@ -8,26 +8,28 @@ use Casdoor\Util\Util;
 
 class Resource
 {
-    public $owner;
-    public $name;
+    public string $owner;
+    public string $name;
+    protected AuthConfig $authConfig;
 
-    public function __construct($owner, $name)
+    public function __construct(string $owner, string $name, AuthConfig $authConfig)
     {
-        $this->owner = $owner;
-        $this->name  = $name;
+        $this->owner      = $owner;
+        $this->name       = $name;
+        $this->authConfig = $authConfig;
     }
 
-    public static function uploadResource(string $tag, string $parent, string $fullFilePath, array $fileBytes, AuthConfig $authConfig): array
+    public function uploadResource(string $tag, string $parent, string $fullFilePath, array $fileBytes): array
     {
         $queryMap = [
             'owner'        => 'admin',
-            'application'  => $authConfig->applicationName,
+            'application'  => $this->authConfig->applicationName,
             'tag'          => $tag,
             'parent'       => $parent,
             'fullFilePath' => $fullFilePath,
         ];
     
-        $resp = Util::doPost('upload-resource', $queryMap, $authConfig, $fileBytes, true);
+        $resp = Util::doPost('upload-resource', $queryMap, $this->authConfig, $fileBytes, true);
 
         if ($resp->status != 'ok') {
             return ['', ''];
@@ -38,16 +40,14 @@ class Resource
         return [$fileUrl, $name];
     }
     
-    public static function deleteResource(string $name, AuthConfig $authConfig): bool
+    public function deleteResource(): bool
     {
-        $resource = new self($authConfig->organizationName, $name);
-
-        $postBytes = json_encode($resource);
+        $postBytes = json_encode($this);
         if ($postBytes === false) {
             return false;
         }
     
-        $resp = Util::doPost('delete-resource', [], $authConfig, $postBytes, false);
+        $resp = Util::doPost('delete-resource', [], $this->authConfig, $postBytes, false);
     
         return $resp->data == 'Affected';
     }
