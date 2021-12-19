@@ -20,14 +20,18 @@ class Resource
     public static function uploadResource(string $tag, string $parent, string $fullFilePath, array $fileBytes, AuthConfig $authConfig): array
     {
         $queryMap = [
-            'owner'        => $authConfig->organizationName,
+            'owner'        => 'admin',
             'application'  => $authConfig->applicationName,
             'tag'          => $tag,
             'parent'       => $parent,
             'fullFilePath' => $fullFilePath,
         ];
     
-        $resp = Util::doPost('upload-resource', $queryMap, $authConfig, $fileBytes);
+        $resp = Util::doPost('upload-resource', $queryMap, $authConfig, $fileBytes, true);
+
+        if ($resp->status != 'ok') {
+            return ['', ''];
+        }
 
         $fileUrl = (string)$resp->data;
         $name = (string)$resp->data2;
@@ -43,7 +47,7 @@ class Resource
             return false;
         }
     
-        $resp = Util::doPost('delete-resource', [], $authConfig, $postBytes);
+        $resp = Util::doPost('delete-resource', [], $authConfig, $postBytes, false);
     
         return $resp->data == 'Affected';
     }

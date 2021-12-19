@@ -38,17 +38,41 @@ class Util
         return $url;
     }
 
-    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig, $postData): stdClass
+    public static function createForm($formData)
+    {
+        $res = [];
+        $formData = json_decode($formData, true);
+        foreach ($formData as $k => $v) {
+            $res[] = [
+                'name'     => $k,
+                'contents' => $v,
+                'filename' => 'file'
+            ];
+        }
+        return $res;
+    }
+
+    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig, $postData, bool $isFormData): stdClass
     {
         $url = self::getUrl($action, $queryMap, $authConfig);
 
         $client = new Client();
-        $request = new Request('POST', $url, ['content-type' => 'text/plain;charset=UTF-8'], $postData);
+
         try {
-            $resp = $client->send($request);
+            if ($isFormData) {
+                $resp = $client->request('POST', $url, [
+                    'multipart' => self::createForm($postData)
+                ]);
+            } else {
+                $resp = $client->request('POST', $url, [
+                    'header' => ['content-type' => 'text/plain;charset=UTF-8'],
+                    'body'   => $postData
+                ]);
+            }
         } catch (GuzzleException $e) {
             return null;
         }
+
         $respStream = $resp->getBody();
         $response = json_decode($respStream->__toString());
         return $response;
