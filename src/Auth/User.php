@@ -119,7 +119,7 @@ class User
             throw new CasdoorException('json_encode fails');
         }
 
-        $response = Util::doPost($action, $queryMap, self::$authConfig, $postData);
+        $response = Util::doPost($action, $queryMap, self::$authConfig, $postData, false);
         return [$response, $response->data === 'Affected'];
     }
 
