@@ -9,7 +9,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\StreamInterface;
 use stdClass;
-use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class Util.
@@ -18,23 +17,28 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class Util
 {
-    public static function doGetStream(string $url): StreamInterface
+    public static function doGetStream(string $url, AuthConfig $authConfig): StreamInterface
     {
         $client = new Client();
-        $request = new Request('GET', $url);
+        $credentials = base64_encode("{$authConfig->clientId}:{$authConfig->clientSecret}");
+        $headers = [
+            'Authorization' => 'Basic ' . $credentials,
+        ];
+        $request = new Request('GET', $url, $headers);
         $response = $client->send($request);
         $stream = $response->getBody();
         return $stream;
     }
 
-    public static function getUrl(string $action, array $queryMap, $authConfig): string
+    public static function getUrl(string $action, array $queryMap, AuthConfig $authConfig): string
     {
         $query = '';
         foreach ($queryMap as $k => $v) {
             $query .= sprintf('%s=%s&', $k, $v);
         }
-    
-        $url = sprintf('%s/api/%s?%sclientId=%s&clientSecret=%s', $authConfig->endpoint, $action, $query, $authConfig->clientId, $authConfig->clientSecret);
+        $query = rtrim($query, '&');
+
+        $url = sprintf('%s/api/%s?%s', $authConfig->endpoint, $action, $query);
         return $url;
     }
 
@@ -57,20 +61,23 @@ class Util
         $url = self::getUrl($action, $queryMap, $authConfig);
 
         $client = new Client();
+        $credentials = base64_encode("{$authConfig->clientId}:{$authConfig->clientSecret}");
 
-        try {
-            if ($isFormData) {
-                $resp = $client->request('POST', $url, [
-                    'multipart' => self::createForm($postData)
-                ]);
-            } else {
-                $resp = $client->request('POST', $url, [
-                    'header' => ['content-type' => 'text/plain;charset=UTF-8'],
-                    'body'   => $postData
-                ]);
-            }
-        } catch (GuzzleException $e) {
-            return null;
+        if ($isFormData) {
+            $resp = $client->request('POST', $url, [
+                'headers'    => [
+                    'Authorization' => 'Basic ' . $credentials
+                ],
+                'multipart' => self::createForm($postData)
+            ]);
+        } else {
+            $resp = $client->request('POST', $url, [
+                'headers' => [
+                    'content-type'  => 'text/plain;charset=UTF-8',
+                    'Authorization' => 'Basic ' . $credentials,
+                ],
+                'body'   => $postData
+            ]);
         }
 
         $respStream = $resp->getBody();
