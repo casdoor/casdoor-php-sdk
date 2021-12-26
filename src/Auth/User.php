@@ -143,7 +143,7 @@ class User
 
     public function checkUserPassword(User $user):bool
     {
-        list($response, $affected) = $this->modifyUser('delete-user', $user);
+        list($response, $affected) = $this->modifyUser('check-user-password', $user);
         return $response->status == 'ok';
     }
 }
