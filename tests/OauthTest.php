@@ -19,8 +19,7 @@ class OauthTest extends TestCase
 
     // public function initConfig()
     // {
-    //     $this->user = new User();
-    //     $this->user->initConfig(
+    //     User::initConfig(
     //         'localhost:8000',
     //         'cb00020ceab4c83751a9',
     //         'd6b7cb7db0c5577a26fb876693d4b5d84e31d62a',

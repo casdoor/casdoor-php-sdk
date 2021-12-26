@@ -56,16 +56,16 @@ class Util
         return $res;
     }
 
-    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig, $postData, bool $isFormData): stdClass
+    public static function doPost(string $action, array $queryMap, AuthConfig $authConfig, $postData, bool $isFile): stdClass
     {
         $url = self::getUrl($action, $queryMap, $authConfig);
 
         $client = new Client();
         $credentials = base64_encode("{$authConfig->clientId}:{$authConfig->clientSecret}");
 
-        if ($isFormData) {
+        if ($isFile) {
             $resp = $client->request('POST', $url, [
-                'headers'    => [
+                'headers'   => [
                     'Authorization' => 'Basic ' . $credentials
                 ],
                 'multipart' => self::createForm($postData)
@@ -74,7 +74,7 @@ class Util
             $resp = $client->request('POST', $url, [
                 'headers' => [
                     'content-type'  => 'text/plain;charset=UTF-8',
-                    'Authorization' => 'Basic ' . $credentials,
+                    'Authorization' => 'Basic ' . $credentials
                 ],
                 'body'   => $postData
             ]);

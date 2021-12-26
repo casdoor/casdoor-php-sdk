@@ -75,12 +75,12 @@ class User
 
     public static $authConfig;
 
-    public function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName, string $applicationName): void
+    public static function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName, string $applicationName): void
     {
         self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
     }
 
-    public function getUsers(): array
+    public static function getUsers(): array
     {
         $queryMap = [
             'owner' => self::$authConfig->organizationName
@@ -94,7 +94,7 @@ class User
         return $users;
     }
 
-    public function getUser(string $name): array
+    public static function getUser(string $name): array
     {
         $queryMap = [
             'id' => sprintf('%s/%s', self::$authConfig->organizationName, $name),
@@ -107,7 +107,7 @@ class User
         return $user;
     }
 
-    public function modifyUser(string $action, User $user): array
+    public static function modifyUser(string $action, User $user): array
     {
         $user->owner = self::$authConfig->organizationName;
         $queryMap = [
@@ -123,27 +123,27 @@ class User
         return [$response, $response->data === 'Affected'];
     }
 
-    public function updateUser(User $user): bool
+    public static function updateUser(User $user): bool
     {
-        list($response, $affected) = $this->modifyUser('update-user', $user);
+        list($response, $affected) = self::modifyUser('update-user', $user);
         return $affected;
     }
 
-    public function addUser(User $user): bool
+    public static function addUser(User $user): bool
     {
-        list($response, $affected) = $this->modifyUser('add-user', $user);
+        list($response, $affected) = self::modifyUser('add-user', $user);
         return $affected;
     }
 
-    public function deleteUser(User $user): bool
+    public static function deleteUser(User $user): bool
     {
-        list($response, $affected) = $this->modifyUser('delete-user', $user);
+        list($response, $affected) = self::modifyUser('delete-user', $user);
         return $affected;
     }
 
-    public function checkUserPassword(User $user):bool
+    public static function checkUserPassword(User $user):bool
     {
-        list($response, $affected) = $this->modifyUser('check-user-password', $user);
+        list($response, $affected) = self::modifyUser('check-user-password', $user);
         return $response->status == 'ok';
     }
 }
