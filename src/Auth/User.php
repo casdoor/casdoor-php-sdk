@@ -89,7 +89,7 @@ class User
         $url = Util::getUrl('get-users', $queryMap, self::$authConfig);
 
         $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, self::$authConfig->clientId, self::$authConfig->clientSecret);
-        $stream = Util::doGetStream($url);
+        $stream = Util::doGetStream($url, self::$authConfig);
         $users = json_decode($stream->__toString());
         return $users;
     }
@@ -102,7 +102,7 @@ class User
 
         $url = Util::getUrl('get-user', $queryMap, self::$authConfig);
 
-        $stream = Util::doGetStream($url);
+        $stream = Util::doGetStream($url, self::$authConfig);
         $user = json_decode($stream->__toString(), true);
         return $user;
     }
