@@ -95,6 +95,33 @@ class User
         return $users;
     }
 
+    public static function getSortedUsers(string $sorter, int $limit): array
+    {
+        $queryMap = [
+            'owner'  => self::$authConfig->organizationName,
+            'sorter' => $sorter,
+            'limit'  => strval($limit)
+        ];
+    
+        $url = Util::getUrl('get-sorted-users', $queryMap, self::$authConfig);
+        $stream = Util::doGetStream($url, self::$authConfig);
+        $users = json_decode($stream->__toString(), true);
+        return $users;
+    }
+
+    public static function getUserCount(int $isOnline): int
+    {
+        $queryMap = [
+            'owner'    => self::$authConfig->organizationName,
+            'isOnline' => $isOnline,
+        ];
+    
+        $url = Util::getUrl('get-user-count', $queryMap, self::$authConfig);
+        $stream = Util::doGetStream($url, self::$authConfig);
+        $count = json_decode($stream->__toString(), true, 512, JSON_THROW_ON_ERROR);
+        return $count;
+    }
+
     public static function getUser(string $name): array
     {
         $queryMap = [
@@ -105,6 +132,19 @@ class User
 
         $stream = Util::doGetStream($url, self::$authConfig);
         $user = json_decode($stream->__toString(), true);
+        return $user;
+    }
+
+    public static function getUserByEmail(string $email): array
+    {
+        $queryMap = [
+            'owner' => self::$authConfig->organizationName,
+            'email' => $email,
+        ];
+    
+        $url = Util::getUrl('get-user', $queryMap, self::$authConfig);
+        $stream = Util::doGetStream($url, self::$authConfig);
+        $user = json_decode($stream->__toString(), true, 512, JSON_THROW_ON_ERROR);
         return $user;
     }
 
