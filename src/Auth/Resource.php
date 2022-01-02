@@ -40,6 +40,30 @@ class Resource
         return [$fileUrl, $name];
     }
     
+    public function uploadResourceEx(string $user, string $tag, string $parent, string $fullFilePath, array $fileBytes, string $createdTime, string $description): array
+    {
+        $queryMap = [
+            'owner'        => $this->authConfig->organizationName,
+            'user'         => $user,
+            'application'  => $this->authConfig->applicationName,
+            'tag'          => $tag,
+            'parent'       => $parent,
+            'fullFilePath' => $fullFilePath,
+            'createdTime'  => $createdTime,
+            'description'  => $description,
+        ];
+    
+        $resp = Util::doPost('upload-resource', $queryMap, $this->authConfig, $fileBytes, true);
+
+        if ($resp->status != 'ok') {
+            return ['', ''];
+        }
+    
+        $fileUrl = (string)$resp->data;
+        $name = (string)$resp->data2;
+        return [$fileUrl, $name];
+    }
+
     public function deleteResource(): bool
     {
         $postBytes = json_encode($this);
