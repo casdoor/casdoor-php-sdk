@@ -22,6 +22,7 @@ class User
     public string $id;
     public string $type;
     public string $password;
+    public string $passwordSalt;
     public string $displayName;
     public string $avatar;
     public string $permanentAvatar;
