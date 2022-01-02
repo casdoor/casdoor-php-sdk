@@ -107,12 +107,16 @@ class User
         return $user;
     }
 
-    public static function modifyUser(string $action, User $user): array
+    public static function modifyUser(string $action, User $user, array $columns): array
     {
         $user->owner = self::$authConfig->organizationName;
         $queryMap = [
             'id' => sprintf('%s/%s', $user->owner, $user->name)
         ];
+
+        if (count($columns) != 0) {
+            $queryMap['columns'] = implode(',', $columns);
+        }
 
         $postData = json_encode($user);
         if ($postData === false) {
@@ -125,25 +129,31 @@ class User
 
     public static function updateUser(User $user): bool
     {
-        list($response, $affected) = self::modifyUser('update-user', $user);
+        list($response, $affected) = self::modifyUser('update-user', $user, []);
+        return $affected;
+    }
+
+    public static function updateUserForColumns(User $user, array $columns): bool
+    {
+        list($response, $affected) = self::modifyUser('update-user', $user, $columns);
         return $affected;
     }
 
     public static function addUser(User $user): bool
     {
-        list($response, $affected) = self::modifyUser('add-user', $user);
+        list($response, $affected) = self::modifyUser('add-user', $user, []);
         return $affected;
     }
 
     public static function deleteUser(User $user): bool
     {
-        list($response, $affected) = self::modifyUser('delete-user', $user);
+        list($response, $affected) = self::modifyUser('delete-user', $user, []);
         return $affected;
     }
 
     public static function checkUserPassword(User $user):bool
     {
-        list($response, $affected) = self::modifyUser('check-user-password', $user);
+        list($response, $affected) = self::modifyUser('check-user-password', $user, []);
         return $response->status == 'ok';
     }
 }
