@@ -44,20 +44,27 @@ class OauthTest extends TestCase
     //     $accessToken = $token->getOAuthToken($this->code, '');
     //     $token = $accessToken->getToken();
     //     $jwt = new Jwt();
-    //     $this->assertIsArray($jwt->parseJwtToken($token));
+    //     $this->assertIsArray($jwt->parseJwtToken($token, User::$authConfig));
     // }
 
     // public function testGetUsers()
     // {
     //     $this->initConfig();
-    //     $users = $this->user->getUsers();
+    //     $users = User::getUsers();
     //     $this->assertIsArray($users);
+    // }
+
+    // public function testGetUserCount()
+    // {
+    //     $this->initConfig();
+    //     $count = User::getUserCount('true');
+    //     $this->assertIsInt($count);
     // }
 
     // public function testGetUser()
     // {
     //     $this->initConfig();
-    //     $user = $this->user->getUser('admin2');
+    //     $user = User::getUser('admin2');
     //     $this->assertIsArray($user);
     // }
 
