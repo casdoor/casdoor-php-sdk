@@ -1,6 +1,6 @@
 {
-    "name": "casdoor/casdoor",
-    "description": "php sdk of casdoor",
+    "name": "casdoor/casdoor-php-sdk",
+    "description": "PHP client SDK for Casdoor",
     "authors": [
         {
             "name": "basakest",
@@ -9,9 +9,17 @@
     ],
     "license": "Apache-2.0",
     "keywords": [        
-        "casdoor"
+        "casdoor",
+        "oauth",
+        "saml",
+        "authentication",
+        "auth",
+        "sso",
+        "oidc",
+        "authn"
     ],
     "require": {
+        "php": ">=7.1.0",
         "guzzlehttp/guzzle": "^7.3",
         "league/oauth2-client": "^2.6"
     },
