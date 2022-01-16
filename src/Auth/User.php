@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
-use Casdoor\Exceptions\CasdoorException;
 
 /**
  * Class User.
@@ -159,10 +158,7 @@ class User
             $queryMap['columns'] = implode(',', $columns);
         }
 
-        $postData = json_encode($user);
-        if ($postData === false) {
-            throw new CasdoorException('json_encode fails');
-        }
+        $postData = json_encode($user, JSON_THROW_ON_ERROR);
 
         $response = Util::doPost($action, $queryMap, self::$authConfig, $postData, false);
         return [$response, $response->data === 'Affected'];

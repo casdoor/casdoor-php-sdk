@@ -18,7 +18,7 @@ class Sms
     public array $receivers;
     protected AuthConfig $authConfig;
 
-    public function __construct(string $content, string ...$receivers, AuthConfig $authConfig)
+    public function __construct(AuthConfig $authConfig, string $content, string ...$receivers)
     {
         $this->content    = $content;
         $this->receivers  = $receivers;
