@@ -6,6 +6,9 @@ namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
 
+/**
+ * Class Organization is used to add or delete your casdoor organization
+ */
 class Organization
 {
     public string $owner;

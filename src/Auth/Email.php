@@ -20,13 +20,13 @@ class Email
     public array $receivers;
     protected AuthConfig $authConfig;
 
-    public function __construct(string $title, string $content, string $sender, string ...$receivers, AuthConfig $authConfig)
+    public function __construct(string $title, string $content, string $sender, AuthConfig $authConfig, string ...$receivers)
     {
         $this->title      = $title;
         $this->content    = $content;
         $this->sender     = $sender;
-        $this->receivers  = $receivers;
         $this->authConfig = $authConfig;
+        $this->receivers  = $receivers;
     }
 
     public function sendEmail()

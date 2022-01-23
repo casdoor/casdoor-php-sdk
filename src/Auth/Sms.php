@@ -8,7 +8,7 @@ use Casdoor\Exceptions\CasdoorException;
 use Casdoor\Util\Util;
 
 /**
- * Class Sms.
+ * Class Sms, if your casdoor is set up correctly, you can send sms by using this class
  *
  * @author ab1652759879@gmail.com
  */

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Casdoor\Auth;
 
 /**
- * Class Url.
+ * Class Url is used to get some common url of casdoor
  *
  * @author ab1652759879@gmail.com
  */
