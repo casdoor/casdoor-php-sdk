@@ -6,6 +6,9 @@ namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
 
+/**
+ * Class Resource is used to upload or delete resources
+ */
 class Resource
 {
     public string $owner;

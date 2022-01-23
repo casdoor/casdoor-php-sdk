@@ -6,6 +6,9 @@ namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
 
+/**
+ * Class Application is used to add or delete your casdoor application
+ */
 class Application
 {
     public string $owner;

@@ -14,6 +14,14 @@ use League\OAuth2\Client\Provider\GenericProvider;
  */
 class Token
 {
+    /**
+     * GetOAuthToken gets the pivotal and necessary secret to interact with the Casdoor server
+     *
+     * @param string $code
+     * @param string $state
+     *
+     * @return AccessTokenInterface
+     */
     public function getOAuthToken(string $code, string $state): AccessTokenInterface
     {
         $authConfig = User::$authConfig;

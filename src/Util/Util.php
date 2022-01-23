@@ -17,6 +17,14 @@ use stdClass;
  */
 class Util
 {
+    /**
+     * doGetStream is a general function to get response from param url through HTTP Get method.
+     *
+     * @param string     $url
+     * @param AuthConfig $authConfig
+     *
+     * @return StreamInterface
+     */
     public static function doGetStream(string $url, AuthConfig $authConfig): StreamInterface
     {
         $client = new Client();

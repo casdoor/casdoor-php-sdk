@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Casdoor\Auth;
 
 /**
- * Class AuthConfig.
+ * AuthConfig is the core configuration.
+ * The first step to use this SDK is to use the InitConfig function to initialize an instance of authConfig.
  *
  * @author ab1652759879@gmail.com
  */

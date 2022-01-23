@@ -147,6 +147,16 @@ class User
         return $user;
     }
 
+    /**
+     * modifyUser is an encapsulation of user CUD(Create, Update, Delete) operations.
+     * possible actions are `add-user`, `update-user`, `delete-user`...
+     *
+     * @param string $action
+     * @param User   $user
+     * @param array  $columns
+     *
+     * @return array
+     */
     public static function modifyUser(string $action, User $user, array $columns): array
     {
         $user->owner = self::$authConfig->organizationName;
