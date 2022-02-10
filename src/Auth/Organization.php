@@ -11,19 +11,65 @@ use Casdoor\Util\Util;
  */
 class Organization
 {
-    public string $owner;
-    public string $name;
-    public string $createdTime;
+    /**
+     * @var string
+     */
+    public $owner;
 
-    public string $displayName;
-    public string $websiteUrl;
-    public string $favicon;
-    public string $passwordType;
-    public string $passwordSalt;
-    public string $phonePrefix;
-    public string $defaultAvatar;
-    public string $masterPassword;
-    public bool   $enableSoftDeletion;
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $createdTime;
+
+    /**
+     * @var string
+     */
+    public $displayName;
+
+    /**
+     * @var string
+     */
+    public $websiteUrl;
+
+    /**
+     * @var string
+     */
+    public $favicon;
+
+    /**
+     * @var string
+     */
+    public $passwordType;
+
+    /**
+     * @var string
+     */
+    public $passwordSalt;
+
+    /**
+     * @var string
+     */
+    public $phonePrefix;
+
+    /**
+     * @var string
+     */
+    public $defaultAvatar;
+
+    /**
+     * @var string
+     */
+    public $masterPassword;
+
+    /**
+     * @var bool
+     */
+    public $enableSoftDeletion;
 
     public function __construct(string $owner, string $name)
     {

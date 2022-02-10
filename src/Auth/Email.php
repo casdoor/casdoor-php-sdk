@@ -14,11 +14,30 @@ use Casdoor\Util\Util;
  */
 class Email
 {
-    public string $title;
-    public string $content;
-    public string $sender;
-    public array $receivers;
-    protected AuthConfig $authConfig;
+    /**
+     * @var string
+     */
+    public $title;
+
+    /**
+     * @var string
+     */
+    public $content;
+
+    /**
+     * @var string
+     */
+    public $sender;
+
+    /**
+     * @var array
+     */
+    public $receivers;
+
+    /**
+     * @var AuthConfig
+     */
+    protected $authConfig;
 
     public function __construct(string $title, string $content, string $sender, AuthConfig $authConfig, string ...$receivers)
     {
