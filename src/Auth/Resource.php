@@ -11,9 +11,21 @@ use Casdoor\Util\Util;
  */
 class Resource
 {
-    public string $owner;
-    public string $name;
-    protected AuthConfig $authConfig;
+
+    /**
+     * @var string
+     */
+    public $owner;
+
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var AuthConfig
+     */
+    protected $authConfig;
 
     public function __construct(string $owner, string $name, AuthConfig $authConfig)
     {

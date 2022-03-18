@@ -13,64 +13,279 @@ use Casdoor\Util\Util;
  */
 class User
 {
-    public string $owner;
-    public string $name;
-    public string $createdTime;
-    public string $updatedTime;
+    /**
+     * @var string
+     */
+    public $owner;
 
-    public string $id;
-    public string $type;
-    public string $password;
-    public string $passwordSalt;
-    public string $displayName;
-    public string $avatar;
-    public string $permanentAvatar;
-    public string $email;
-    public string $phone;
-    public string $location;
-    public array  $address;
-    public string $affiliation;
-    public string $title;
-    public string $idCardType;
-    public string $idCard;
-    public string $homePage;
-    public string $bio;
-    public string $tag;
-    public string $region;
-    public string $language;
-    public string $gender;
-    public string $brithday;
-    public string $education;
-    public int    $score;
-    public int    $ranking;
-    public bool   $isDefaultAvatar;
-    public bool   $isOnline;
-    public bool   $isAdmin;
-    public bool   $isGlobalAdmin;
-    public bool   $isForbidden;
-    public bool   $isDeleted;
-    public string $signupApplication;
-    public string $hash;
-    public string $preHash;
+    /**
+     * @var string
+     */
+    public $name;
 
-    public string $createdIp;
-    public string $lastSigninTime;
-    public string $lastSigninIp;
+    /**
+     * @var string
+     */
+    public $createdTime;
 
-    public string $github;
-    public string $google;
-    public string $qq;
-    public string $wechat;
-    public string $facebook;
-    public string $dingtalk;
-    public string $weibo;
-    public string $gitee;
-    public string $linkedin;
-    public string $wecom;
-    public string $lark;
-    public string $gitlab;
+    /**
+     * @var string
+     */
+    public $updatedTime;
 
-    public string $ldap;
+    /**
+     * @var string
+     */
+    public $id;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var string
+     */
+    public $password;
+
+    /**
+     * @var string
+     */
+    public $passwordSalt;
+
+    /**
+     * @var string
+     */
+    public $displayName;
+
+    /**
+     * @var string
+     */
+    public $avatar;
+
+    /**
+     * @var string
+     */
+    public $permanentAvatar;
+
+    /**
+     * @var string
+     */
+    public $email;
+
+    /**
+     * @var string
+     */
+    public $phone;
+
+    /**
+     * @var string
+     */
+    public $location;
+
+    /**
+     * @var array
+     */
+    public $address;
+
+    /**
+     * @var string
+     */
+    public $affiliation;
+
+    /**
+     * @var string
+     */
+    public $title;
+
+    /**
+     * @var string
+     */
+    public $idCardType;
+
+    /**
+     * @var string
+     */
+    public $idCard;
+
+    /**
+     * @var string
+     */
+    public $homePage;
+
+    /**
+     * @var string
+     */
+    public $bio;
+
+    /**
+     * @var string
+     */
+    public $tag;
+
+    /**
+     * @var string
+     */
+    public $region;
+
+    /**
+     * @var string
+     */
+    public $language;
+
+    /**
+     * @var string
+     */
+    public $gender;
+
+    /**
+     * @var string
+     */
+    public $brithday;
+
+    /**
+     * @var string
+     */
+    public $education;
+
+    /**
+     * @var int
+     */
+    public $score;
+
+    /**
+     * @var int
+     */
+    public $ranking;
+
+    /**
+     * @var bool
+     */
+    public $isDefaultAvatar;
+
+    /**
+     * @var bool
+     */
+    public $isOnline;
+
+    /**
+     * @var bool
+     */
+    public $isAdmin;
+
+    /**
+     * @var bool
+     */
+    public $isGlobalAdmin;
+
+    /**
+     * @var bool
+     */
+    public $isForbidden;
+
+    /**
+     * @var bool
+     */
+    public $isDeleted;
+
+    /**
+     * @var string
+     */
+    public $signupApplication;
+
+    /**
+     * @var string
+     */
+    public $hash;
+
+    /**
+     * @var string
+     */
+    public $preHash;
+
+    /**
+     * @var string
+     */
+    public $createdIp;
+
+    /**
+     * @var string
+     */
+    public $lastSigninTime;
+
+    /**
+     * @var string
+     */
+    public $lastSigninIp;
+
+    /**
+     * @var string
+     */
+    public $github;
+
+    /**
+     * @var string
+     */
+    public $google;
+
+    /**
+     * @var string
+     */
+    public $qq;
+
+    /**
+     * @var string
+     */
+    public $wechat;
+
+    /**
+     * @var string
+     */
+    public $facebook;
+
+    /**
+     * @var string
+     */
+    public $dingtalk;
+
+    /**
+     * @var string
+     */
+    public $weibo;
+
+    /**
+     * @var string
+     */
+    public $gitee;
+
+    /**
+     * @var string
+     */
+    public $linkedin;
+
+    /**
+     * @var string
+     */
+    public $wecom;
+
+    /**
+     * @var string
+     */
+    public $lark;
+
+    /**
+     * @var string
+     */
+    public $gitlab;
+
+    /**
+     * @var string
+     */
+    public $ldap;
+
+    /**
+     * @var array
+     */
     public array  $properties;
 
     public static $authConfig;

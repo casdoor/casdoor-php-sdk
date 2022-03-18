@@ -14,9 +14,20 @@ use Casdoor\Util\Util;
  */
 class Sms
 {
-    public string $content;
-    public array $receivers;
-    protected AuthConfig $authConfig;
+    /**
+     * @var string
+     */
+    public $content;
+
+    /**
+     * @var array
+     */
+    public $receivers;
+
+    /**
+     * @var AuthConfig
+     */
+    protected $authConfig;
 
     public function __construct(AuthConfig $authConfig, string $content, string ...$receivers)
     {

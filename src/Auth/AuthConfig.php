@@ -12,12 +12,35 @@ namespace Casdoor\Auth;
  */
 class AuthConfig
 {
-    public string $endpoint;
-    public string $clientId;
-    public string $clientSecret;
-    public string $JwtPublicKey;
-    public string $organizationName;
-    public string $applicationName;
+    /**
+     * @var string
+     */
+    public $endpoint;
+
+    /**
+     * @var string
+     */
+    public $clientId;
+
+    /**
+     * @var string
+     */
+    public $clientSecret;
+
+    /**
+     * @var string
+     */
+    public $JwtPublicKey;
+
+    /**
+     * @var string
+     */
+    public $organizationName;
+
+    /**
+     * @var string
+     */
+    public $applicationName;
 
     public function __construct(string $endpoint, string $clientId, string $clientSecret, string $jwtPublicKey, string $organizationName, string $applicationName)
     {

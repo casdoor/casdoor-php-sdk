@@ -11,34 +11,136 @@ use Casdoor\Util\Util;
  */
 class Application
 {
-    public string $owner;
-    public string $name;
-    public string $createdTime;
+    /**
+     * @var string
+     */
+    public $owner;
 
-    public string $displayName;
-    public string $logo;
-    public string $homepageUrl;
-    public string $description;
-    public string $organization;
-    public string $cert;
-    public bool   $enablePassword;
-    public bool   $enableSignUp;
-    public bool   $enableSigninSession;
-    public bool   $enableCodeSignin;
+    /**
+     * @var string
+     */
+    public $name;
 
-    public string $clientId;
-    public string $clientSecret;
-    public array  $redirectUris;
-    public string $tokenFormat;
-    public int    $expireInHours;
-    public int    $refreshExpireInHours;
-    public string $signupUrl;
-    public string $signinUrl;
-    public string $forgetUrl;
-    public string $affiliationUrl;
-    public string $termsOfUse;
-    public string $signupHtml;
-    public string $signinHtml;
+    /**
+     * @var string
+     */
+    public $createdTime;
+
+    /**
+     * @var string
+     */
+    public $displayName;
+
+    /**
+     * @var string
+     */
+    public $logo;
+
+    /**
+     * @var string
+     */
+    public $homepageUrl;
+
+    /**
+     * @var string
+     */
+    public $description;
+
+    /**
+     * @var string
+     */
+    public $organization;
+
+    /**
+     * @var string
+     */
+    public $cert;
+
+    /**
+     * @var bool
+     */
+    public $enablePassword;
+
+    /**
+     * @var bool
+     */
+    public $enableSignUp;
+
+    /**
+     * @var bool
+     */
+    public $enableSigninSession;
+
+    /**
+     * @var bool
+     */
+    public $enableCodeSignin;
+
+
+    /**
+     * @var string
+     */
+    public $clientId;
+
+    /**
+     * @var string
+     */
+    public $clientSecret;
+
+    /**
+     * @var array
+     */
+    public $redirectUris;
+
+    /**
+     * @var string
+     */
+    public $tokenFormat;
+
+    /**
+     * @var int
+     */
+    public $expireInHours;
+
+    /**
+     * @var int
+     */
+    public $refreshExpireInHours;
+
+    /**
+     * @var string
+     */
+    public $signupUrl;
+
+    /**
+     * @var string
+     */
+    public $signinUrl;
+
+    /**
+     * @var string
+     */
+    public $forgetUrl;
+
+    /**
+     * @var string
+     */
+    public $affiliationUrl;
+
+    /**
+     * @var string
+     */
+    public $termsOfUse;
+
+    /**
+     * @var string
+     */
+    public $signupHtml;
+
+    /**
+     * @var string
+     */
+    public $signinHtml;
 
     public function __construct(string $owner, string $name)
     {
