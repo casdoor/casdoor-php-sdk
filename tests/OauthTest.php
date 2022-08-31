@@ -19,14 +19,13 @@ class OauthTest extends TestCase
 
     // public function initConfig()
     // {
-    //     User::initConfig(
-    //         'localhost:8000',
-    //         'cb00020ceab4c83751a9',
-    //         'd6b7cb7db0c5577a26fb876693d4b5d84e31d62a',
-    //         '',
-    //         'built-in',
-    //         ''
-    //     );
+        // $endpoint = 'http://127.0.0.1:8000';
+        // $clientId = 'c64b12723aefb65a88ce';
+        // $clientSecret = 'c0c9d483a87332751b2564635765d71c9f6a2e83';
+        // $jwtSecret = file_get_contents(dirname(__FILE__) . '/token_jwt_key.pem');
+        // $organizationName = 'built-in';
+        // $applicationName = 'testApp';
+        // User::initConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
     // }
 
     // public function testGetOauthToken()
@@ -68,24 +67,23 @@ class OauthTest extends TestCase
     //     $this->assertIsArray($user);
     // }
 
+    /**
+     * Support PHP 8.0
+     */
     // public function testModifyUser()
     // {
-    //     $this->initConfig();
-    //     $this->user->name = 'test_user';
-    //     $this->user->deleteUser($this->user);
+        // $this->initConfig();
+        // $user = new User();
+        // $user->name = 'user_hn99qa';
+        // $response = $user->deleteUser($user);
+        // $this->assertTrue($response);
 
-    //     $response = $this->user->addUser($this->user);
-    //     $this->assertTrue($response);
+        // $response = $user->addUser($user);
+        // $this->assertTrue($response);
 
-    //     $response = $this->user->deleteUser($this->user);
-    //     $this->assertTrue($response);
-
-    //     $response = $this->user->addUser($this->user);
-    //     $this->assertTrue($response);
-
-    //     $this->user->phone = 'phone';
-    //     $this->user->displayName = 'display name';
-    //     $response = $this->user->updateUser($this->user);
-    //     $this->assertTrue($response);
+        // $user->phone = 'phone';
+        // $user->displayName = 'display name';
+        // $response = $user->updateUser($user);
+        // $this->assertTrue($response);
     // }
 }
