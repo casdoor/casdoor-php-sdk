@@ -1,7 +1,7 @@
-## Tips
+# casdoor-php-sdk
+
 Chinese: [README_zh-CN.md](README_zh-CN.md)
 
-# describe
 Casdoor PHP SDK will allow you to easily connect your application to Casdoor authentication system without having to start from scratch.
 
 # Step 1: Composer install casdoor-php-sdk 
