@@ -45,7 +45,7 @@ class OauthTest extends TestCase
 
 for more information, see initConfig()
 
-| 参数名           | 是否必须 | 描述                                                                                            |
+| Parameter           | required | description                                                                                            |
 | ---------------- | -------- | ----------------------------------------------------------------------------------------------- |
 | endpoint         | Yes      | The back-end API address of the Casdoor, for example:http://localhost:8000                      |
 | clientId         | Yes      | The client ID of the current application.                                                       |
@@ -54,7 +54,7 @@ for more information, see initConfig()
 | organizationName | Yes      | The organization name of the current application configuration.                                 |
 | applicationName  | Yes      | The name of the current application.                                                            |
 
-参考代码：
+Reference code:
 
 ```php
 public function initConfig()
