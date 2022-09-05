@@ -1,5 +1,5 @@
 composer.lock
-
+node_modules
 .idea/
 *.iml
 

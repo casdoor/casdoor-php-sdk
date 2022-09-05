@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "semantic-release": "^19.0.5"
+  },
+  "dependencies": {
+    "@iwavesmedia/semantic-release-composer": "^1.0.0"
+  }
+}
