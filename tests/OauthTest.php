@@ -11,8 +11,6 @@ class OauthTest extends TestCase
 {
     public $code = "e3bc886294f2b43b8a1a";
 
-    public $user;
-
     public function initConfig()
     {
         $endpoint = 'http://127.0.0.1:8000';
