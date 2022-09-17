@@ -1,5 +1,7 @@
 # casdoor-php-sdk
 
+[![Latest Stable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Total Downloads](http://poser.pugx.org/casdoor/casdoor-php-sdk/downloads)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Latest Unstable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v/unstable)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+
 Chinese: [README_zh-CN.md](README_zh-CN.md)
 
 Casdoor PHP SDK will allow you to easily connect your application to Casdoor authentication system without having to start from scratch.

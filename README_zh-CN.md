@@ -1,3 +1,7 @@
+# casdoor-php-sdk
+
+[![Latest Stable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Total Downloads](http://poser.pugx.org/casdoor/casdoor-php-sdk/downloads)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Latest Unstable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v/unstable)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+
 # 描述
 Casdoor的PHP SDK将允许您轻松地将应用程序连接到Casdoor身份验证系统，而无需从头开始实现。
 
