@@ -5,167 +5,75 @@ declare(strict_types=1);
 namespace Casdoor\Auth;
 
 use Casdoor\Util\Util;
+use Casdoor\Exceptions\CasdoorException;
 
 /**
  * Class Application is used to add or delete your casdoor application
  */
 class Application
 {
-    /**
-     * @var string
-     */
-    public $owner;
+    public string $owner;
+    public string $name;
+    public string $createdTime;
+    public array $providers;
+    public string $displayName;
+    public string $logo;
+    public string $homepageUrl;
+    public string $description;
+    public string $organization;
+    public string $cert;
+    public bool   $enablePassword;
+    public bool   $enableSignUp;
+    public bool   $enableSigninSession;
+    public bool   $enableCodeSignin;
+    public bool   $enableSamlCompress;
 
-    /**
-     * @var string
-     */
-    public $name;
+    public string $clientId;
+    public string $clientSecret;
+    public array  $redirectUris;
+    public string $tokenFormat;
+    public int    $expireInHours;
+    public int    $formOffset;
+    public int    $refreshExpireInHours;
+    public string $signupUrl;
+    public string $signinUrl;
+    public string $forgetUrl;
+    public string $affiliationUrl;
+    public string $termsOfUse;
+    public string $signupHtml;
+    public string $signinHtml;
+    public array $signupItems ;
+    public static $authConfig;
 
-    /**
-     * @var string
-     */
-    public $createdTime;
-
-    /**
-     * @var string
-     */
-    public $displayName;
-
-    /**
-     * @var string
-     */
-    public $logo;
-
-    /**
-     * @var string
-     */
-    public $homepageUrl;
-
-    /**
-     * @var string
-     */
-    public $description;
-
-    /**
-     * @var string
-     */
-    public $organization;
-
-    /**
-     * @var string
-     */
-    public $cert;
-
-    /**
-     * @var bool
-     */
-    public $enablePassword;
-
-    /**
-     * @var bool
-     */
-    public $enableSignUp;
-
-    /**
-     * @var bool
-     */
-    public $enableSigninSession;
-
-    /**
-     * @var bool
-     */
-    public $enableCodeSignin;
-
-
-    /**
-     * @var string
-     */
-    public $clientId;
-
-    /**
-     * @var string
-     */
-    public $clientSecret;
-
-    /**
-     * @var array
-     */
-    public $redirectUris;
-
-    /**
-     * @var string
-     */
-    public $tokenFormat;
-
-    /**
-     * @var int
-     */
-    public $expireInHours;
-
-    /**
-     * @var int
-     */
-    public $refreshExpireInHours;
-
-    /**
-     * @var string
-     */
-    public $signupUrl;
-
-    /**
-     * @var string
-     */
-    public $signinUrl;
-
-    /**
-     * @var string
-     */
-    public $forgetUrl;
-
-    /**
-     * @var string
-     */
-    public $affiliationUrl;
-
-    /**
-     * @var string
-     */
-    public $termsOfUse;
-
-    /**
-     * @var string
-     */
-    public $signupHtml;
-
-    /**
-     * @var string
-     */
-    public $signinHtml;
-
-    public function __construct(string $owner, string $name)
+    public static function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName, string $applicationName): void
     {
-        $this->owner = $owner;
-        $this->name  = $name;
+        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
+    }
+    
+    public function __construct(AuthConfig $authConfig)
+    {
+        $this->authConfig = $authConfig;
+        $this->createdTime = date("y-m-d H:i:s", time());
     }
 
-    public function addApplication(Application $application, AuthConfig $authConfig): bool
+    public function addApplication(): bool
     {
-        if ($application->owner == '') {
-            $application->owner = 'admin';
+        if (!isset($this->name)) {
+            throw new CasdoorException("name is empty");
         }
-        $postBytes = json_encode($application, JSON_THROW_ON_ERROR);
-    
-        $resp = Util::doPost('add-application', [], $authConfig, $postBytes, false);
-    
+        $postBytes = json_encode($this, JSON_THROW_ON_ERROR);
+        $resp = Util::doPost('add-application', [], $this->authConfig, $postBytes, false);
         return $resp->data == 'Affected';
     }
-    
-    public function deleteApplication(string $name, AuthConfig $authConfig): bool
+
+    public function deleteApplication(): bool
     {
-        $application = new Application('admin', $name);
-        $postBytes = json_encode($application, JSON_THROW_ON_ERROR);
-    
-        $resp = Util::doPost('delete-application', [], $authConfig, $postBytes, false);
+        if (!isset($this->name)) {
+            throw new CasdoorException("name is empty");
+        }
+        $postBytes = json_encode($this, JSON_THROW_ON_ERROR);
+
+        $resp = Util::doPost('delete-application', [], $this->authConfig, $postBytes, false);
 
         return $resp->data == 'Affected';
     }
