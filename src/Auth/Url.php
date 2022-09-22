@@ -21,7 +21,7 @@ class Url
         }
     }
 
-    public function getSigninUrl(string $redirectUri, AuthConfig $authConfig): string
+    public static function getSigninUrl(string $redirectUri, AuthConfig $authConfig): string
     {
         // $origin = 'https://door.casbin.com';
         // $redirectUri = sprintf('%s/callback', $origin);
