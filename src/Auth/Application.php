@@ -45,9 +45,9 @@ class Application
     public array $signupItems ;
     public static $authConfig;
 
-    public static function initConfig(string $endpoint, string $clientId, string $clientSecret, string $jwtSecret, string $organizationName, string $applicationName): void
+    public static function initConfig(string $endpoint, string $clientId, string $clientSecret, string $certificate, string $organizationName, string $applicationName): void
     {
-        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
+        self::$authConfig = new AuthConfig($endpoint, $clientId, $clientSecret, $certificate, $organizationName, $applicationName);
     }
     
     public function __construct(AuthConfig $authConfig)
