@@ -30,7 +30,7 @@ class AuthConfig
     /**
      * @var string
      */
-    public $JwtPublicKey;
+    public $jwtPublicKey;
 
     /**
      * @var string
