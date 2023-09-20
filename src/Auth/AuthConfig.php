@@ -30,7 +30,7 @@ class AuthConfig
     /**
      * @var string
      */
-    public $JwtPublicKey;
+    public $certificate;
 
     /**
      * @var string
@@ -42,12 +42,12 @@ class AuthConfig
      */
     public $applicationName;
 
-    public function __construct(string $endpoint, string $clientId, string $clientSecret, string $jwtPublicKey, string $organizationName, string $applicationName)
+    public function __construct(string $endpoint, string $clientId, string $clientSecret, string $certificate, string $organizationName, string $applicationName)
     {
         $this->endpoint         = $endpoint;
         $this->clientId         = $clientId;
         $this->clientSecret     = $clientSecret;
-        $this->jwtPublicKey     = $jwtPublicKey;
+        $this->certificate      = $certificate;
         $this->organizationName = $organizationName;
         $this->applicationName  = $applicationName;
     }

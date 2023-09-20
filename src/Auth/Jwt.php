@@ -24,7 +24,7 @@ class Jwt
      */
     private function getKey(AuthConfig $authConfig)
     {
-        $key = openssl_pkey_get_public($authConfig->jwtPublicKey);
+        $key = openssl_pkey_get_public($authConfig->certificate);
 
         if (is_bool($key)) {
             throw new CasdoorException('Cannot verify signature');

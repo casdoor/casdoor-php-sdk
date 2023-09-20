@@ -19,7 +19,7 @@
         "authn"
     ],
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.4.0",
         "guzzlehttp/guzzle": "^7.3",
         "league/oauth2-client": "^2.6"
     },
