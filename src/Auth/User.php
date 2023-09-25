@@ -305,7 +305,7 @@ class User
 
         $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, self::$authConfig->clientId, self::$authConfig->clientSecret);
         $stream = Util::doGetStream($url, self::$authConfig);
-        $users = json_decode($stream->__toString());
+        $users = json_decode($stream->__toString(), true);
         return $users;
     }
 
