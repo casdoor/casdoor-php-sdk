@@ -22,8 +22,10 @@ class ResourceTest extends TestCase
 
     public function testUploadResource()
     {
+
+        $this->initConfig();
         
-        $resourceHandler = new Resource('test_owner', 'test_resource', $this->authConfig);
+        $resourceHandler = new Resource('test_owner', 'test_resource',  User::$authConfig);
 
         // 准备测试数据
         $tag = 'test_tag';
@@ -40,7 +42,9 @@ class ResourceTest extends TestCase
     
     public function testUploadResourceEx()
     {
-        $resourceHandler = new Resource('test_owner', 'test_resource', $this->authConfig);
+
+        $this->initConfig();
+        $resourceHandler = new Resource('test_owner', 'test_resource',  User::$authConfig);
 
         $user = 'test_user';
         $tag = 'test_tag';
@@ -58,7 +62,9 @@ class ResourceTest extends TestCase
 
     public function testDeleteResource()
     {
-        $resourceHandler = new Resource('test_owner', 'test_resource', $this->authConfig);
+
+        $this->initConfig();
+        $resourceHandler = new Resource('test_owner', 'test_resource',  User::$authConfig);
 
 
         $result = $resourceHandler->deleteResource();
