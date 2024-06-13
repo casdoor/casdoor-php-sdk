@@ -288,6 +288,10 @@ class User
      */
     public array  $properties;
 
+    public array  $roles;
+    public array  $permissions;
+    public array  $groups;
+
     public static $authConfig;
 
     public static function initConfig(string $endpoint, string $clientId, string $clientSecret, string $certificate, string $organizationName, string $applicationName): void
