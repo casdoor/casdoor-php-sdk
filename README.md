@@ -1,10 +1,15 @@
 # casdoor-php-sdk
 
-[![Latest Stable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Total Downloads](http://poser.pugx.org/casdoor/casdoor-php-sdk/downloads)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![Latest Unstable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v/unstable)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk) [![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+[![Latest Stable Version](http://poser.pugx.org/casdoor/casdoor-php-sdk/v)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+[![Total Downloads](http://poser.pugx.org/casdoor/casdoor-php-sdk/downloads)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+[![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
+[![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
 
 Casdoor PHP SDK will allow you to easily connect your application to Casdoor authentication system without having to start from scratch.
 
-# Step 1: Composer install casdoor-php-sdk 
+# How to use?
+
+## Step 1: Composer install casdoor-php-sdk 
 
 In your php application directory, run the following command:
 
@@ -41,7 +46,7 @@ class OauthTest extends TestCase
 }
 ```
 
-# Step 2: configure parameters
+## Step 2: configure parameters
 
 for more information, see initConfig()
 
@@ -69,7 +74,7 @@ public function initConfig()
   }
 ```
 
-# Step 3: obtain the user JWT token
+## Step 3: obtain the user JWT token
 
 after you log on to the logon page, the page is redirected to a link with code and state, such:[https://forum.casbin.com?code=xxx&state=yyyy](https://forum.casbin.com?code=xxx&state=yyyy.)
 In the sample file, enter code and state, call the testGetOauthToken() method, and parse the jwt token.
@@ -88,7 +93,7 @@ public function testGetOauthToken()
 
 The JWT token represents the user's identity and has the right to call relevant APIs.
 
-# Step 4: verify and parse the user token
+## Step 4: verify and parse the user token
 
 When a user passes in a JWT token, testParseJwtToken function calls the public key to verify the JWT token. If the verification is passed, the Array object is returned, which contains the account information of the user.
 
@@ -103,7 +108,7 @@ public function testParseJwtToken()
 }
 ```
 
-# Step 5: update user information
+## Step 5: update user information
 
 testModifyUser call the application configuration (non-user token) as the update permission to perform CURD operations on user information.
 
@@ -130,8 +135,21 @@ public function testModifyUser()
 }
 ```
 
-# Others: User interaction
+## Others: User interaction
 
 - User::getUser() , obtain User information by User name
 - User::getUsers() to obtain information about all users.
 - User::getUserCount() to obtain the current number of users.
+
+# How to contact?
+
+- Discord: https://discord.gg/5rPsrAzK7S
+- Contact: https://casdoor.org/help
+
+# Contribute
+
+For casdoor, if you have any questions, you can give Issues, or you can also directly start Pull Requests(but we recommend giving issues first to communicate with the community).
+
+# License
+
+[Apache-2.0](https://github.com/casdoor/casdoor-php-sdk/blob/master/LICENSE)
