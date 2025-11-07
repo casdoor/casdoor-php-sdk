@@ -301,17 +301,18 @@ The SDK provides comprehensive support for managing the following Casdoor resour
 | **Resource**  | File and media resources                      | ✅ Implemented    |
 | **Email**     | Email sending                                 | ✅ Implemented    |
 | **SMS**       | SMS sending                                   | ✅ Implemented    |
-| **Role**      | User roles                                    | 🔄 In Progress    |
-| **Permission** | Access permissions                           | 🔄 In Progress    |
-| **Provider**  | Third-party authentication providers          | 🔄 In Progress    |
-| **Certificate** | SSL/TLS certificates                        | 🔄 In Progress    |
-| **Session**   | User sessions                                 | 🔄 In Progress    |
-| **Webhook**   | Event webhooks                                | 🔄 In Progress    |
-| **Group**     | User groups                                   | 🔄 In Progress    |
+| **Role**      | User roles                                    | ✅ Implemented    |
+| **Permission** | Access permissions                           | ✅ Implemented    |
+| **Provider**  | Third-party authentication providers          | ✅ Implemented    |
+| **Certificate** | SSL/TLS certificates (Cert)                 | ✅ Implemented    |
+| **Session**   | User sessions                                 | ✅ Implemented    |
+| **Webhook**   | Event webhooks                                | ✅ Implemented    |
+| **Group**     | User groups                                   | ✅ Implemented    |
+| **Adapter**   | Policy adapters                               | ✅ Implemented    |
+| **Enforcer**  | Policy enforcers                              | ✅ Implemented    |
+| **Model**     | Policy models                                 | ✅ Implemented    |
+| **Record**    | Audit and activity records                    | ✅ Implemented    |
 | **Syncer**    | User synchronization from external systems    | 🔄 In Progress    |
-| **Adapter**   | Policy adapters                               | 🔄 In Progress    |
-| **Enforcer**  | Policy enforcers                              | 🔄 In Progress    |
-| **Model**     | Policy models                                 | 🔄 In Progress    |
 | **Policy**    | Access control policies                       | 🔄 In Progress    |
 | **Payment**   | Payment records                               | 🔄 In Progress    |
 | **Product**   | Products/services                             | 🔄 In Progress    |
@@ -320,7 +321,6 @@ The SDK provides comprehensive support for managing the following Casdoor resour
 | **Pricing**   | Pricing configurations                        | 🔄 In Progress    |
 | **Transaction** | Payment transactions                        | 🔄 In Progress    |
 | **Invitation** | User invitations                             | 🔄 In Progress    |
-| **Record**    | Audit and activity records                    | 🔄 In Progress    |
 
 ### Method Patterns
 
@@ -409,7 +409,7 @@ $newUser->displayName = 'John Doe';
 $newUser->email = 'john@example.com';
 $newUser->password = 'secure_password';
 
-$success = $newUser->addUser($newUser);
+$success = User::addUser($newUser);
 if ($success) {
     echo "User created successfully!\n";
 }
@@ -423,7 +423,7 @@ if ($user) {
         $userObj->$key = $value;
     }
     $userObj->displayName = 'John D.';
-    $success = $userObj->updateUser($userObj);
+    $success = User::updateUser($userObj);
     echo "User updated: " . ($success ? 'Yes' : 'No') . "\n";
 }
 ```
