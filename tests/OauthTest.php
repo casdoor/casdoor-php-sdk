@@ -24,6 +24,9 @@ class OauthTest extends TestCase
         User::initConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
     }
 
+    /**
+     * @group integration
+     */
     public function testGetOauthToken()
     {
         $this->initConfig();
@@ -32,6 +35,9 @@ class OauthTest extends TestCase
         $this->assertIsString($accessToken->getToken());
     }
 
+    /**
+     * @group integration
+     */
     public function testParseJwtToken()
     {
         $this->initConfig();
@@ -42,6 +48,9 @@ class OauthTest extends TestCase
         $this->assertIsArray($jwt->parseJwtToken($token, User::$authConfig));
     }
 
+    /**
+     * @group integration
+     */
     public function testGetUsers()
     {
         $this->initConfig();
@@ -49,13 +58,19 @@ class OauthTest extends TestCase
         $this->assertIsArray($users);
     }
 
+    /**
+     * @group integration
+     */
     public function testGetUserCount()
     {
         $this->initConfig();
-        $count = User::getUserCount('true');
+        $count = User::getUserCount(1);
         $this->assertIsInt($count);
     }
 
+    /**
+     * @group integration
+     */
     public function testGetUser()
     {
         $this->initConfig();
@@ -65,6 +80,7 @@ class OauthTest extends TestCase
 
     /**
      * Support PHP 8.0, no error will be reported
+     * @group integration
      */
     public function testModifyUser()
     {
