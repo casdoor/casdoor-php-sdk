@@ -1,18 +1,27 @@
 <?php
 
-declare(strict_types=1);
+// Copyright 2023 The Casdoor Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 namespace Casdoor\Tests;
 
 use Casdoor\Auth\User;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Test case for User class
- */
 class UserTest extends TestCase
 {
-    protected function setUp(): void
+    public function testUser(): void
     {
         User::initConfig(
             TestUtil::TEST_ENDPOINT,
@@ -22,128 +31,82 @@ class UserTest extends TestCase
             TestUtil::TEST_ORGANIZATION,
             TestUtil::TEST_APPLICATION
         );
-    }
 
-    /**
-     * Test getting all users
-     *
-     * @group integration
-     */
-    public function testGetUsers(): void
-    {
-        $this->markTestSkipped('Requires live Casdoor server connection');
-        
-        $users = User::getUsers();
-        $this->assertIsArray($users);
-    }
-
-    /**
-     * Test getting user count
-     *
-     * @group integration
-     */
-    public function testGetUserCount(): void
-    {
-        $this->markTestSkipped('Requires live Casdoor server connection');
-        
-        $count = User::getUserCount('true');
-        $this->assertIsInt($count);
-        $this->assertGreaterThanOrEqual(0, $count);
-    }
-
-    /**
-     * Test getting a specific user
-     *
-     * @group integration
-     */
-    public function testGetUser(): void
-    {
-        $this->markTestSkipped('Requires live Casdoor server connection');
-        
-        $name = 'admin';
-        $user = User::getUser($name);
-        $this->assertIsArray($user);
-    }
-
-    /**
-     * Test CRUD operations on user
-     *
-     * @group integration
-     */
-    public function testUserCRUD(): void
-    {
-        $this->markTestSkipped('Requires live Casdoor server connection');
-        
         $name = TestUtil::getRandomName('User');
-        
-        // Create a new user
+
+        // Add a new object
         $user = new User();
         $user->owner = TestUtil::TEST_ORGANIZATION;
         $user->name = $name;
         $user->createdTime = TestUtil::getCurrentTime();
         $user->displayName = $name;
         
-        // Add user
-        $result = $user->addUser($user);
-        $this->assertTrue($result);
+        $affected = User::addUser($user);
+        if (!$affected) {
+            $this->fail('Failed to add object');
+        }
+
+        // Get all objects, check if our added object is inside the list
+        $users = User::getUsers();
+        if (!is_array($users)) {
+            $this->fail('Failed to get objects');
+        }
         
-        // Get the user
-        $fetchedUser = User::getUser($name);
-        $this->assertIsArray($fetchedUser);
-        $this->assertEquals($name, $fetchedUser['name']);
+        $found = false;
+        foreach ($users as $item) {
+            if (isset($item['name']) && $item['name'] === $name) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $this->fail('Added object not found in list');
+        }
+
+        // Get the object
+        $user = User::getUser($name);
+        if (!is_array($user)) {
+            $this->fail('Failed to get object');
+        }
+        if ($user['name'] !== $name) {
+            $this->fail(sprintf('Retrieved object does not match added object: %s != %s', $user['name'], $name));
+        }
+
+        // Update the object
+        $updatedDisplayName = 'Updated Casdoor Website';
+        $userObj = new User();
+        $userObj->owner = TestUtil::TEST_ORGANIZATION;
+        $userObj->name = $name;
+        $userObj->displayName = $updatedDisplayName;
         
-        // Update the user
-        $user->displayName = 'Updated ' . $name;
-        $user->phone = '+1234567890';
-        $result = $user->updateUser($user);
-        $this->assertTrue($result);
-        
-        // Verify update
+        $affected = User::updateUser($userObj);
+        if (!$affected) {
+            $this->fail('Failed to update object');
+        }
+
+        // Validate the update
         $updatedUser = User::getUser($name);
-        $this->assertIsArray($updatedUser);
-        $this->assertEquals('Updated ' . $name, $updatedUser['displayName']);
+        if (!is_array($updatedUser)) {
+            $this->fail('Failed to get updated object');
+        }
+        if ($updatedUser['displayName'] !== $updatedDisplayName) {
+            $this->fail(sprintf('Failed to update object, description mismatch: %s != %s', $updatedUser['displayName'], $updatedDisplayName));
+        }
+
+        // Delete the object
+        $userObj = new User();
+        $userObj->owner = TestUtil::TEST_ORGANIZATION;
+        $userObj->name = $name;
         
-        // Delete the user
-        $result = $user->deleteUser($user);
-        $this->assertTrue($result);
-        
-        // Verify deletion
+        $affected = User::deleteUser($userObj);
+        if (!$affected) {
+            $this->fail('Failed to delete object');
+        }
+
+        // Validate the deletion
         $deletedUser = User::getUser($name);
-        $this->assertNull($deletedUser);
-    }
-
-    /**
-     * Test User object instantiation
-     */
-    public function testUserObjectCreation(): void
-    {
-        $user = new User();
-        $user->name = 'testuser';
-        $user->displayName = 'Test User';
-        $user->email = 'test@example.com';
-        
-        $this->assertEquals('testuser', $user->name);
-        $this->assertEquals('Test User', $user->displayName);
-        $this->assertEquals('test@example.com', $user->email);
-    }
-
-    /**
-     * Test User static auth config initialization
-     */
-    public function testInitConfig(): void
-    {
-        User::initConfig(
-            'http://localhost:8000',
-            'test_client_id',
-            'test_client_secret',
-            'test_certificate',
-            'test_org',
-            'test_app'
-        );
-        
-        $this->assertNotNull(User::$authConfig);
-        $this->assertEquals('http://localhost:8000', User::$authConfig->endpoint);
-        $this->assertEquals('test_client_id', User::$authConfig->clientId);
-        $this->assertEquals('test_client_secret', User::$authConfig->clientSecret);
+        if ($deletedUser !== null && !empty($deletedUser)) {
+            $this->fail('Failed to delete object, it\'s still retrievable');
+        }
     }
 }
