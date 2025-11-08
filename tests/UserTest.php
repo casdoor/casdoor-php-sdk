@@ -41,15 +41,23 @@ class UserTest extends TestCase
         $user->createdTime = TestUtil::getCurrentTime();
         $user->displayName = $name;
         
-        $affected = User::addUser($user);
-        if (!$affected) {
-            $this->fail('Failed to add object');
+        try {
+            $affected = User::addUser($user);
+            if (!$affected) {
+                $this->fail('Failed to add object');
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to add object: %s', $e->getMessage()));
         }
 
         // Get all objects, check if our added object is inside the list
-        $users = User::getUsers();
-        if (!is_array($users)) {
-            $this->fail('Failed to get objects');
+        try {
+            $users = User::getUsers();
+            if (!is_array($users)) {
+                $this->fail('Failed to get objects');
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to get objects: %s', $e->getMessage()));
         }
         
         $found = false;
@@ -64,12 +72,16 @@ class UserTest extends TestCase
         }
 
         // Get the object
-        $user = User::getUser($name);
-        if (!is_array($user)) {
-            $this->fail('Failed to get object');
-        }
-        if ($user['name'] !== $name) {
-            $this->fail(sprintf('Retrieved object does not match added object: %s != %s', $user['name'], $name));
+        try {
+            $user = User::getUser($name);
+            if (!is_array($user)) {
+                $this->fail('Failed to get object');
+            }
+            if ($user['name'] !== $name) {
+                $this->fail(sprintf('Retrieved object does not match added object: %s != %s', $user['name'], $name));
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to get object: %s', $e->getMessage()));
         }
 
         // Update the object
@@ -79,18 +91,26 @@ class UserTest extends TestCase
         $userObj->name = $name;
         $userObj->displayName = $updatedDisplayName;
         
-        $affected = User::updateUser($userObj);
-        if (!$affected) {
-            $this->fail('Failed to update object');
+        try {
+            $affected = User::updateUser($userObj);
+            if (!$affected) {
+                $this->fail('Failed to update object');
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to update object: %s', $e->getMessage()));
         }
 
         // Validate the update
-        $updatedUser = User::getUser($name);
-        if (!is_array($updatedUser)) {
-            $this->fail('Failed to get updated object');
-        }
-        if ($updatedUser['displayName'] !== $updatedDisplayName) {
-            $this->fail(sprintf('Failed to update object, description mismatch: %s != %s', $updatedUser['displayName'], $updatedDisplayName));
+        try {
+            $updatedUser = User::getUser($name);
+            if (!is_array($updatedUser)) {
+                $this->fail('Failed to get updated object');
+            }
+            if ($updatedUser['displayName'] !== $updatedDisplayName) {
+                $this->fail(sprintf('Failed to update object, description mismatch: %s != %s', $updatedUser['displayName'], $updatedDisplayName));
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to get updated object: %s', $e->getMessage()));
         }
 
         // Delete the object
@@ -98,15 +118,23 @@ class UserTest extends TestCase
         $userObj->owner = TestUtil::TEST_ORGANIZATION;
         $userObj->name = $name;
         
-        $affected = User::deleteUser($userObj);
-        if (!$affected) {
-            $this->fail('Failed to delete object');
+        try {
+            $affected = User::deleteUser($userObj);
+            if (!$affected) {
+                $this->fail('Failed to delete object');
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to delete object: %s', $e->getMessage()));
         }
 
         // Validate the deletion
-        $deletedUser = User::getUser($name);
-        if ($deletedUser !== null && !empty($deletedUser)) {
-            $this->fail('Failed to delete object, it\'s still retrievable');
+        try {
+            $deletedUser = User::getUser($name);
+            if ($deletedUser !== null && !empty($deletedUser)) {
+                $this->fail('Failed to delete object, it\'s still retrievable');
+            }
+        } catch (\Exception $e) {
+            $this->fail(sprintf('Failed to delete object, it\'s still retrievable: %s', $e->getMessage()));
         }
     }
 }
