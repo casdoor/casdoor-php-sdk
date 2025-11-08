@@ -143,23 +143,19 @@ public function testModifyUser()
 
 # Testing
 
-To run the unit tests:
+To run the tests:
 
 ```bash
 composer install
-vendor/bin/phpunit --exclude-group integration
-```
-
-To run all tests (including integration tests that require a live Casdoor server):
-
-```bash
 vendor/bin/phpunit
 ```
 
 The test suite includes:
-- Unit tests for all core SDK classes
-- Integration tests that require a live Casdoor server
+- Unit tests for SDK classes that don't require external connections
+- Integration tests that run against the Casdoor demo server (https://demo.casdoor.com)
 - Code coverage reporting
+
+All tests run automatically in CI/CD pipelines using the demo server configuration.
 
 # How to contact?
 

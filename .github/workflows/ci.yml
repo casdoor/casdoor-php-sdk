@@ -49,11 +49,11 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run tests
-        run: vendor/bin/phpunit --exclude-group integration --testdox
+        run: vendor/bin/phpunit --testdox
 
       - name: Run tests with coverage
         if: matrix.php-versions == '8.1'
-        run: vendor/bin/phpunit --exclude-group integration --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload coverage to Codecov
         if: matrix.php-versions == '8.1'

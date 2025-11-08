@@ -15,18 +15,15 @@ class OauthTest extends TestCase
 
     public function initConfig()
     {
-        $endpoint = 'http://127.0.0.1:8000';
-        $clientId = 'c64b12723aefb65a88ce';
-        $clientSecret = 'c0c9d483a87332751b2564635765d71c9f6a2e83';
-        $jwtSecret = file_get_contents(dirname(__FILE__) . '/public_key.pem');
-        $organizationName = 'built-in';
-        $applicationName = 'testApp';
+        $endpoint = TestUtil::TEST_ENDPOINT;
+        $clientId = TestUtil::TEST_CLIENT_ID;
+        $clientSecret = TestUtil::TEST_CLIENT_SECRET;
+        $jwtSecret = TestUtil::TEST_JWT_PUBLIC_KEY;
+        $organizationName = TestUtil::TEST_ORGANIZATION;
+        $applicationName = TestUtil::TEST_APPLICATION;
         User::initConfig($endpoint, $clientId, $clientSecret, $jwtSecret, $organizationName, $applicationName);
     }
 
-    /**
-     * @group integration
-     */
     public function testGetOauthToken()
     {
         $this->initConfig();
@@ -35,9 +32,6 @@ class OauthTest extends TestCase
         $this->assertIsString($accessToken->getToken());
     }
 
-    /**
-     * @group integration
-     */
     public function testParseJwtToken()
     {
         $this->initConfig();
@@ -48,9 +42,6 @@ class OauthTest extends TestCase
         $this->assertIsArray($jwt->parseJwtToken($token, User::$authConfig));
     }
 
-    /**
-     * @group integration
-     */
     public function testGetUsers()
     {
         $this->initConfig();
@@ -58,9 +49,6 @@ class OauthTest extends TestCase
         $this->assertIsArray($users);
     }
 
-    /**
-     * @group integration
-     */
     public function testGetUserCount()
     {
         $this->initConfig();
@@ -68,9 +56,6 @@ class OauthTest extends TestCase
         $this->assertIsInt($count);
     }
 
-    /**
-     * @group integration
-     */
     public function testGetUser()
     {
         $this->initConfig();
@@ -80,7 +65,6 @@ class OauthTest extends TestCase
 
     /**
      * Support PHP 8.0, no error will be reported
-     * @group integration
      */
     public function testModifyUser()
     {
