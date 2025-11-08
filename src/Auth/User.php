@@ -336,8 +336,15 @@ class User
     
         $url = Util::getUrl('get-user-count', $queryMap, self::$authConfig);
         $stream = Util::doGetStream($url, self::$authConfig);
-        $count = json_decode($stream->__toString(), false, 512, JSON_THROW_ON_ERROR);
-        return (int) $count;
+        $response = json_decode($stream->__toString(), false, 512, JSON_THROW_ON_ERROR);
+        
+        // API returns {"status": "ok", "data": count}
+        if (is_object($response) && isset($response->data)) {
+            return (int) $response->data;
+        }
+        
+        // Fallback for direct integer response
+        return (int) $response;
     }
 
     public static function getUser(string $name): array

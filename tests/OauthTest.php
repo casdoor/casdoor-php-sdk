@@ -76,17 +76,17 @@ class OauthTest extends TestCase
         $user->displayName = $name;
         
         // Add the user
-        $response = $user->addUser($user);
+        $response = User::addUser($user);
         $this->assertTrue($response, 'Failed to add user');
 
         // Update the user
         $user->phone = '+1234567890';
         $user->displayName = 'Updated ' . $name;
-        $response = $user->updateUser($user);
+        $response = User::updateUser($user);
         $this->assertTrue($response, 'Failed to update user');
         
         // Delete the user
-        $response = $user->deleteUser($user);
+        $response = User::deleteUser($user);
         $this->assertTrue($response, 'Failed to delete user');
     }
 }
