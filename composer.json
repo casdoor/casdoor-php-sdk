@@ -1,39 +1,57 @@
 {
     "name": "casdoor/casdoor-php-sdk",
-    "description": "PHP client SDK for Casdoor",
-    "authors": [
-        {
-            "name": "basakest",
-            "email": "ab1652759879@gmail.com"
-        }
-    ],
+    "description": "PHP client SDK for Casdoor - an open-source Identity and Access Management (IAM) / Single-Sign-On (SSO) platform",
+    "type": "library",
     "license": "Apache-2.0",
-    "keywords": [        
+    "keywords": [
         "casdoor",
         "oauth",
+        "oauth2",
         "saml",
         "authentication",
+        "authorization",
         "auth",
         "sso",
         "oidc",
-        "authn"
+        "authn",
+        "identity",
+        "iam",
+        "rbac"
     ],
+    "homepage": "https://casdoor.org",
+    "authors": [
+        {
+            "name": "Casdoor",
+            "email": "admin@casbin.org",
+            "homepage": "https://casdoor.org"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/casdoor/casdoor-php-sdk/issues",
+        "source": "https://github.com/casdoor/casdoor-php-sdk",
+        "docs": "https://casdoor.org/docs/how-to-connect/sdk",
+        "discord": "https://discord.gg/5rPsrAzK7S"
+    },
     "require": {
         "php": ">=7.4.0",
+        "ext-json": "*",
+        "ext-openssl": "*",
         "guzzlehttp/guzzle": "^7.3",
-        "league/oauth2-client": "^2.6"
+        "firebase/php-jwt": "^6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
             "Casdoor\\": "src/"
         }
     },
-    "require-dev": {
-        "phpunit/phpunit": "~7.0|~8.0|~9.0"
-    },
     "autoload-dev": {
         "psr-4": {
             "Casdoor\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
