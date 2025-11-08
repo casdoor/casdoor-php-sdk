@@ -309,8 +309,14 @@ class User
 
         $url = sprintf("%s/api/get-users?owner=%s&clientId=%s&clientSecret=%s", self::$authConfig->endpoint, self::$authConfig->organizationName, self::$authConfig->clientId, self::$authConfig->clientSecret);
         $stream = Util::doGetStream($url, self::$authConfig);
-        $users = json_decode($stream->__toString(), true);
-        return $users;
+        $response = json_decode($stream->__toString(), true);
+        
+        // API returns {"status": "ok", "data": [...]} or direct array
+        if (is_array($response) && isset($response['data'])) {
+            return $response['data'];
+        }
+        
+        return $response;
     }
 
     public static function getSortedUsers(string $sorter, int $limit): array
@@ -336,11 +342,18 @@ class User
     
         $url = Util::getUrl('get-user-count', $queryMap, self::$authConfig);
         $stream = Util::doGetStream($url, self::$authConfig);
-        $count = json_decode($stream->__toString(), true, 512, JSON_THROW_ON_ERROR);
-        return $count;
+        $response = json_decode($stream->__toString(), false, 512, JSON_THROW_ON_ERROR);
+        
+        // API returns {"status": "ok", "data": count}
+        if (is_object($response) && isset($response->data)) {
+            return (int) $response->data;
+        }
+        
+        // Fallback for direct integer response
+        return (int) $response;
     }
 
-    public static function getUser(string $name): array
+    public static function getUser(string $name): ?array
     {
         $queryMap = [
             'id' => sprintf('%s/%s', self::$authConfig->organizationName, $name),
@@ -349,8 +362,14 @@ class User
         $url = Util::getUrl('get-user', $queryMap, self::$authConfig);
 
         $stream = Util::doGetStream($url, self::$authConfig);
-        $user = json_decode($stream->__toString(), true);
-        return $user;
+        $response = json_decode($stream->__toString(), true);
+        
+        // API returns {"status": "ok", "data": {...}} or direct object
+        if (is_array($response) && isset($response['data'])) {
+            return $response['data'];
+        }
+        
+        return $response;
     }
 
     public static function getUserByEmail(string $email): array

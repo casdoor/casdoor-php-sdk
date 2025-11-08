@@ -141,6 +141,22 @@ public function testModifyUser()
 - User::getUsers() to obtain information about all users.
 - User::getUserCount() to obtain the current number of users.
 
+# Testing
+
+To run the tests:
+
+```bash
+composer install
+vendor/bin/phpunit
+```
+
+The test suite includes:
+- Unit tests for SDK classes that don't require external connections
+- Integration tests that run against the Casdoor demo server (https://demo.casdoor.com)
+- Code coverage reporting
+
+All tests run automatically in CI/CD pipelines using the demo server configuration.
+
 # How to contact?
 
 - Discord: https://discord.gg/5rPsrAzK7S
