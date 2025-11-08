@@ -336,8 +336,8 @@ class User
     
         $url = Util::getUrl('get-user-count', $queryMap, self::$authConfig);
         $stream = Util::doGetStream($url, self::$authConfig);
-        $count = json_decode($stream->__toString(), true, 512, JSON_THROW_ON_ERROR);
-        return $count;
+        $count = json_decode($stream->__toString(), false, 512, JSON_THROW_ON_ERROR);
+        return (int) $count;
     }
 
     public static function getUser(string $name): array
