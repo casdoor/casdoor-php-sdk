@@ -1,0 +1,95 @@
+<?php
+
+// Copyright 2024 The Casdoor Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+declare(strict_types=1);
+
+namespace Casdoor;
+
+// Syncer has the same definition as https://github.com/casdoor/casdoor/blob/master/object/syncer.go
+class Syncer
+{
+    public string $owner       = '';
+    public string $name        = '';
+    public string $createdTime = '';
+
+    public string $organization = '';
+    public string $type         = '';
+
+    public string $host             = '';
+    public int    $port             = 0;
+    public string $user             = '';
+    public string $password         = '';
+    public string $databaseType     = '';
+    public string $database         = '';
+    public string $table            = '';
+    public string $tablePrimaryKey  = '';
+    public array  $tableColumns     = [];
+    public string $affiliationTable = '';
+    public string $avatarBaseUrl    = '';
+    public string $errorText        = '';
+    public int    $syncInterval     = 0;
+    public bool   $isReadOnly       = false;
+    public bool   $isEnabled        = false;
+}
+
+trait SyncerTrait
+{
+    public function getSyncers(): array
+    {
+        $url = $this->getUrl('get-syncers', ['owner' => $this->organizationName]);
+        return $this->doGetBytes($url);
+    }
+
+    public function getPaginationSyncers(int $p, int $pageSize, array $queryMap = []): array
+    {
+        $queryMap['owner']    = $this->organizationName;
+        $queryMap['p']        = (string) $p;
+        $queryMap['pageSize'] = (string) $pageSize;
+        $url                  = $this->getUrl('get-syncers', $queryMap);
+        $response             = $this->doGetResponse($url);
+        return [$response['data'], (int) ($response['data2'] ?? 0)];
+    }
+
+    public function getSyncer(string $name): ?array
+    {
+        $url = $this->getUrl('get-syncer', ['id' => $this->organizationName . '/' . $name]);
+        return $this->doGetBytes($url);
+    }
+
+    public function addSyncer(Syncer $syncer): bool
+    {
+        return $this->modifySyncer('add-syncer', $syncer);
+    }
+
+    public function updateSyncer(Syncer $syncer): bool
+    {
+        return $this->modifySyncer('update-syncer', $syncer);
+    }
+
+    public function deleteSyncer(Syncer $syncer): bool
+    {
+        return $this->modifySyncer('delete-syncer', $syncer);
+    }
+
+    private function modifySyncer(string $action, Syncer $syncer): bool
+    {
+        $syncer->owner = $this->organizationName;
+        $queryMap      = ['id' => $syncer->owner . '/' . $syncer->name];
+        $postData      = json_encode($syncer, JSON_THROW_ON_ERROR);
+        $response      = $this->doPost($action, $queryMap, $postData);
+        return $this->boolFromResponse($response);
+    }
+}

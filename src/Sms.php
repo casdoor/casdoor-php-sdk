@@ -16,10 +16,21 @@
 
 declare(strict_types=1);
 
-namespace Casdoor\Exceptions;
+namespace Casdoor;
 
-use RuntimeException;
-
-class CasdoorException extends RuntimeException
+trait SmsTrait
 {
+    public function sendSms(string $content, array $receivers): void
+    {
+        $form     = compact('content', 'receivers');
+        $postData = json_encode($form, JSON_THROW_ON_ERROR);
+        $this->doPost('send-sms', [], $postData);
+    }
+
+    public function sendSmsByProvider(string $content, string $provider, array $receivers): void
+    {
+        $form     = compact('content', 'receivers');
+        $postData = json_encode($form, JSON_THROW_ON_ERROR);
+        $this->doPost('send-sms', ['provider' => $provider], $postData);
+    }
 }

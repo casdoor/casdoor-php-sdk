@@ -16,10 +16,25 @@
 
 declare(strict_types=1);
 
-namespace Casdoor\Exceptions;
+namespace Casdoor\Tests;
 
-use RuntimeException;
-
-class CasdoorException extends RuntimeException
+class TokenTest extends TestBase
 {
+    public function testGetTokens(): void
+    {
+        $tokens = $this->client->getTokens();
+        $this->assertIsArray($tokens);
+    }
+
+    public function testParseJwtToken(): void
+    {
+        // Requires a valid JWT token from the Casdoor server
+        $this->markTestSkipped('Requires a live token from the Casdoor server.');
+    }
+
+    public function testGetOAuthToken(): void
+    {
+        // Requires a valid authorization code
+        $this->markTestSkipped('Requires a valid authorization code from the Casdoor server.');
+    }
 }

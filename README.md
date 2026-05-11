@@ -5,151 +5,117 @@
 [![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
 [![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
 
-Casdoor PHP SDK will allow you to easily connect your application to Casdoor authentication system without having to start from scratch.
+PHP client SDK for [Casdoor](https://casdoor.org/).
 
-# How to use?
+## Installation
 
-## Step 1: Composer install casdoor-php-sdk 
-
-In your php application directory, run the following command:
-
-```
+```bash
 composer require casdoor/casdoor-php-sdk
 ```
 
-Or use composer.json to add the following code:
+## Quick Start
 
-```
-{
-    "require": {
-        "vendor/package": "*",
-    }
-}
-```
-
-Then run composer install to make it take effect.
-Create a OauthTest. Php file and import the SDK package.
+Initialize the client:
 
 ```php
-<?php
+use Casdoor\Client;
 
-namespace Casdoor\Tests;
-
-use PHPUnit\Framework\TestCase;
-use Casdoor\Auth\Jwt;
-use Casdoor\Auth\Token;
-use Casdoor\Auth\User;
-
-class OauthTest extends TestCase
-{
-  public function xxx(){}
-}
+$client = new Client(
+    endpoint: 'https://door.casdoor.com',
+    clientId: 'YOUR_CLIENT_ID',
+    clientSecret: 'YOUR_CLIENT_SECRET',
+    certificate: file_get_contents('/path/to/public_key.pem'),
+    organizationName: 'built-in',
+    applicationName: 'app-built-in'
+);
 ```
 
-## Step 2: configure parameters
-
-for more information, see initConfig()
-
-| Parameter           | required | description                                                                                            |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| endpoint         | Yes      | The back-end API address of the Casdoor, for example:http://localhost:8000                      |
-| clientId         | Yes      | The client ID of the current application.                                                       |
-| clientSecret     | Yes      | The client key of the current application.                                                      |
-| certificate      | Yes      | Public key certificate in x509 format under the certificate module (file format public_key.pem) |
-| organizationName | Yes      | The organization name of the current application configuration.                                 |
-| applicationName  | Yes      | The name of the current application.                                                            |
-
-Reference code:
+## Auth / OAuth
 
 ```php
-public function initConfig()
-  {
-    $endpoint = 'http://127.0.0.1:8000';
-    $clientId = 'c64b12723aefb65a88ce';
-    $clientSecret = 'c0c9d483a87332751b2564635765d71c9f6a2e83';
-    $certificate = file_get_contents(dirname(__FILE__) . '/public_key.pem');
-    $organizationName = 'built-in';
-    $applicationName = 'testApp';
-    User::initConfig($endpoint, $clientId, $clientSecret, $certificate, $organizationName, $applicationName);
-  }
+// Get OAuth sign-in URL
+$signinUrl = $client->getSigninUrl('https://your-app.com/callback');
+
+// Exchange authorization code for access token
+$token = $client->getOAuthToken($code, $state);
+
+// Parse JWT token
+$claims = $client->parseJwtToken($token->getToken());
 ```
 
-## Step 3: obtain the user JWT token
-
-after you log on to the logon page, the page is redirected to a link with code and state, such:[https://forum.casbin.com?code=xxx&state=yyyy](https://forum.casbin.com?code=xxx&state=yyyy.)
-In the sample file, enter code and state, call the testGetOauthToken() method, and parse the jwt token.
+## User Management
 
 ```php
-public $code = "cc78dc9953ca6ae6ab58";
-public $state = "casdoor";
-public function testGetOauthToken()
-{
-    $this->initConfig();
-    $token = new Token();
-    $accessToken = $token->getOAuthToken($this->code, $this->state);
-    $this->assertIsString($accessToken->getToken());
-}
+use Casdoor\User;
+
+// Get all users
+$users = $client->getUsers();
+
+// Get single user
+$user = $client->getUser('alice');
+
+// Create user
+$user = new User();
+$user->name = 'alice';
+$user->email = 'alice@example.com';
+$client->addUser($user);
+
+// Update user
+$user->displayName = 'Alice';
+$client->updateUser($user);
+
+// Delete user
+$client->deleteUser($user);
+
+// Paginate users
+[$users, $total] = $client->getPaginationUsers(1, 10);
 ```
 
-The JWT token represents the user's identity and has the right to call relevant APIs.
-
-## Step 4: verify and parse the user token
-
-When a user passes in a JWT token, testParseJwtToken function calls the public key to verify the JWT token. If the verification is passed, the Array object is returned, which contains the account information of the user.
+## Role & Permission Management
 
 ```php
-public function testParseJwtToken()
-{
-    $this->initConfig();
-    $token = "eyJhxxxx";	// from testGetOauthToken()
-    $jwt = new Jwt();
-    $result = $jwt->parseJwtToken($token, User::$authConfig);
-    $this->assertIsArray();
-}
+use Casdoor\Role;
+use Casdoor\Permission;
+
+$roles = $client->getRoles();
+$permissions = $client->getPermissions();
+
+$role = new Role();
+$role->name = 'admin';
+$client->addRole($role);
 ```
 
-## Step 5: update user information
+## Other Resources
 
-testModifyUser call the application configuration (non-user token) as the update permission to perform CURD operations on user information.
+The SDK supports the full Casdoor API. Available methods follow the same patterns:
 
-```php
-public function testModifyUser()
-{
-    $this->initConfig();
-    $user = new User();
+| Resource     | Methods |
+|---|---|
+| Organization | getOrganization, getOrganizations, addOrganization, updateOrganization, deleteOrganization |
+| Application  | getApplications, getApplication, addApplication, updateApplication, deleteApplication |
+| Group        | getGroups, getGroup, addGroup, updateGroup, deleteGroup |
+| Cert         | getCerts, getCert, addCert, updateCert, deleteCert |
+| Provider     | getProviders, getProvider, addProvider, updateProvider, deleteProvider |
+| Resource     | getResources, getResource, uploadResource, deleteResource |
+| Webhook      | getWebhooks, getWebhook, addWebhook, updateWebhook, deleteWebhook |
+| Session      | getSessions, getSession, addSession, updateSession, deleteSession |
+| Syncer       | getSyncers, getSyncer, addSyncer, updateSyncer, deleteSyncer |
+| Plan         | getPlans, getPlan, addPlan, updatePlan, deletePlan |
+| Pricing      | getPricings, getPricing, addPricing, updatePricing, deletePricing |
+| Subscription | getSubscriptions, getSubscription, addSubscription, updateSubscription, deleteSubscription |
+| Product      | getProducts, getProduct, addProduct, updateProduct, deleteProduct |
+| Order        | getOrders, getOrder, addOrder, updateOrder, deleteOrder, cancelOrder |
+| Payment      | getPayments, getPayment, addPayment, updatePayment, deletePayment |
+| Transaction  | getTransactions, getTransaction, addTransaction, updateTransaction, deleteTransaction |
+| Invitation   | getInvitations, getInvitation, addInvitation, updateInvitation, deleteInvitation |
+| Adapter      | getAdapters, getAdapter, addAdapter, updateAdapter, deleteAdapter |
+| Enforcer     | getEnforcers, getEnforcer, addEnforcer, updateEnforcer, deleteEnforcer |
+| Model        | getModels, getModel, addModel, updateModel, deleteModel |
+| Policy       | getPolicies, addPolicy, updatePolicy, removePolicy |
+| Email        | sendEmail, sendEmailByProvider |
+| SMS          | sendSms, sendSmsByProvider |
+| LDAP         | getLdaps, getLdap, addLdap, updateLdap, deleteLdap, getLdapUsers, syncLdapUsers |
 
-    # Delete User
-    $user->name = 'user_hn99qa';
-    $response = $user->deleteUser($user);
-    $this->assertTrue($response);
+## License
 
-    # Add User
-    $response = $user->addUser($user);
-    $this->assertTrue($response);
-
-    # Update User
-    $user->phone = 'phone';
-    $user->displayName = 'display name';
-    $response = $user->updateUser($user);
-    $this->assertTrue($response);
-}
-```
-
-## Others: User interaction
-
-- User::getUser() , obtain User information by User name
-- User::getUsers() to obtain information about all users.
-- User::getUserCount() to obtain the current number of users.
-
-# How to contact?
-
-- Discord: https://discord.gg/5rPsrAzK7S
-- Contact: https://casdoor.org/help
-
-# Contribute
-
-For casdoor, if you have any questions, you can give Issues, or you can also directly start Pull Requests(but we recommend giving issues first to communicate with the community).
-
-# License
-
-[Apache-2.0](https://github.com/casdoor/casdoor-php-sdk/blob/master/LICENSE)
+[Apache 2.0](LICENSE)
