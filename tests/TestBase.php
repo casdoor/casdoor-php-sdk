@@ -34,6 +34,15 @@ class TestBase extends TestCase
         $organizationName = 'built-in';
         $applicationName  = 'app-built-in';
 
+        // These tests talk to a live Casdoor server, skip them when none is running
+        $host = parse_url($endpoint, PHP_URL_HOST);
+        $port = parse_url($endpoint, PHP_URL_PORT) ?: 80;
+        $conn = @fsockopen($host, $port, $errno, $errstr, 1);
+        if ($conn === false) {
+            $this->markTestSkipped("Casdoor server is not running at $endpoint.");
+        }
+        fclose($conn);
+
         $this->client = new Client(
             $endpoint,
             $clientId,
