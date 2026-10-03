@@ -27,12 +27,12 @@ class TestBase extends TestCase
 
     protected function setUp(): void
     {
-        $endpoint         = 'http://localhost:8000';
-        $clientId         = 'YOUR_CLIENT_ID';
-        $clientSecret     = 'YOUR_CLIENT_SECRET';
+        $endpoint         = getenv('CASDOOR_TEST_ENDPOINT') ?: 'http://localhost:8000';
+        $clientId         = getenv('CASDOOR_TEST_CLIENT_ID') ?: 'casdoor-php-sdk-ci-client';
+        $clientSecret     = getenv('CASDOOR_TEST_CLIENT_SECRET') ?: 'casdoor-php-sdk-ci-secret';
         $certificate      = file_get_contents(__DIR__ . '/public_key.pem') ?: '';
-        $organizationName = 'built-in';
-        $applicationName  = 'app-built-in';
+        $organizationName = getenv('CASDOOR_TEST_ORGANIZATION') ?: 'casbin';
+        $applicationName  = getenv('CASDOOR_TEST_APPLICATION') ?: 'app-php-sdk-ci';
 
         // These tests talk to a live Casdoor server, skip them when none is running
         $host = parse_url($endpoint, PHP_URL_HOST);

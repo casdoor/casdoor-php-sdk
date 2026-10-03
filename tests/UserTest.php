@@ -48,6 +48,9 @@ class UserTest extends TestBase
         $affected = $this->client->addUser($user);
         $this->assertTrue($affected);
 
+        // The server generates the user ID and doesn't allow changing it
+        $user->id = $this->client->getUser($user->name)['id'];
+
         $user->displayName = 'Test User PHP SDK';
         $affected          = $this->client->updateUser($user);
         $this->assertTrue($affected);

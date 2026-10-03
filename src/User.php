@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // User has the same definition as https://github.com/casdoor/casdoor/blob/master/object/user.go
-class User
+class User implements \JsonSerializable
 {
     public string $owner       = '';
     public string $name        = '';
@@ -213,6 +213,14 @@ class User
     public function getId(): string
     {
         return $this->owner . '/' . $this->name;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        $data = get_object_vars($this);
+        // properties is a map in Casdoor, so an empty one must be encoded as {} instead of []
+        $data['properties'] = (object) $this->properties;
+        return $data;
     }
 }
 
