@@ -5,7 +5,7 @@
 [![License](http://poser.pugx.org/casdoor/casdoor-php-sdk/license)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
 [![PHP Version Require](http://poser.pugx.org/casdoor/casdoor-php-sdk/require/php)](https://packagist.org/packages/casdoor/casdoor-php-sdk)
 
-PHP client SDK for [Casdoor](https://casdoor.org/).
+PHP client SDK for [Casdoor](https://casdoor.ai/).
 
 ## Installation
 
