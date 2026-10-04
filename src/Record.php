@@ -54,9 +54,24 @@ trait RecordTrait
         return [$response['data'], (int) ($response['data2'] ?? 0)];
     }
 
+    /**
+     * Gets a record by name, or null if it doesn't exist. Casdoor has no API to get a single record,
+     * so it searches the records by name. Like the other APIs that read records, it needs the access
+     * token of an admin user, see withAccessToken().
+     */
     public function getRecord(string $name): ?array
     {
-        return $this->doGetBytes($this->getUrl('get-record', ['id' => $this->getId($name)]));
+        $parts = explode('/', $name);
+        $name  = end($parts);
+
+        // the name filter matches the records whose names contain the given name
+        [$records] = $this->getPaginationRecords(1, 100, ['field' => 'name', 'value' => $name]);
+        foreach ($records ?? [] as $record) {
+            if (($record['name'] ?? '') === $name) {
+                return $record;
+            }
+        }
+        return null;
     }
 
     public function addRecord(Record $record): bool

@@ -180,6 +180,7 @@ class CrudTest extends TestBase
         $transaction->tag         = 'Organization';
         $transaction->amount      = 100.0;
         $transaction->currency    = 'USD';
+        $transaction->user        = 'admin';
         $transaction->state       = 'Paid';
 
         [, $dryRunName] = $this->client->addTransactionWithDryRun(clone $transaction, true);
@@ -188,6 +189,7 @@ class CrudTest extends TestBase
         [$affected, $name] = $this->client->addTransaction($transaction);
         $this->assertNotEmpty($name);
         $this->assertContains($name, array_column($this->client->getTransactions(), 'name'));
+        $this->assertContains($name, array_column($this->client->getUserTransactions('admin'), 'name'));
 
         $transaction->name        = $name;
         $transaction->displayName = 'Updated Transaction';
@@ -196,5 +198,25 @@ class CrudTest extends TestBase
 
         $this->assertTrue($this->client->deleteTransaction($transaction));
         $this->assertNull($this->client->getTransaction($name));
+    }
+
+    public function testRecord(): void
+    {
+        $record               = new \Casdoor\Record();
+        $record->owner        = $this->client->organizationName;
+        $record->name         = 'Record_' . bin2hex(random_bytes(4));
+        $record->createdTime  = date('c');
+        $record->organization = $this->client->organizationName;
+        $record->user         = 'admin';
+        $record->action       = 'test-record';
+        $this->client->addRecord($record);
+
+        // reading the records needs the access token of an admin user
+        $token       = $this->client->getOAuthTokenByPassword('admin', '123');
+        $adminClient = $this->client->withAccessToken($token->getToken());
+
+        $this->assertContains($record->name, array_column($adminClient->getRecords(), 'name'));
+        $this->assertSame($record->name, $adminClient->getRecord($record->name)['name']);
+        $this->assertNull($adminClient->getRecord($record->name . '_missing'));
     }
 }

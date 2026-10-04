@@ -69,7 +69,8 @@ trait TransactionTrait
 
     public function getUserTransactions(string $userName): array
     {
-        $url = $this->getUrl('get-user-transactions', ['owner' => $this->organizationName, 'user' => $userName]);
+        // Casdoor has no get-user-transactions API, get-transactions filters the transactions by user
+        $url = $this->getUrl('get-transactions', ['owner' => $this->organizationName, 'field' => 'user', 'value' => $userName]);
         return $this->doGetBytes($url);
     }
 
