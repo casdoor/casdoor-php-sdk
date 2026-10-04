@@ -35,7 +35,8 @@ class Plan
     public bool   $isEnabled        = false;
 
     public string $role    = '';
-    public array  $options = [];
+    public bool $isExclusive = false;
+    public array $options = [];
 }
 
 trait PlanTrait
@@ -58,7 +59,7 @@ trait PlanTrait
 
     public function getPlan(string $name): ?array
     {
-        $url = $this->getUrl('get-plan', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-plan', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -79,7 +80,7 @@ trait PlanTrait
 
     private function modifyPlan(string $action, Plan $plan): bool
     {
-        $plan->owner = $this->organizationName;
+        $plan->owner = $this->getOwner($plan->owner, $this->organizationName);
         $queryMap    = ['id' => $plan->owner . '/' . $plan->name];
         $postData    = json_encode($plan, JSON_THROW_ON_ERROR);
         $response    = $this->doPost($action, $queryMap, $postData);

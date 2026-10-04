@@ -27,6 +27,8 @@ class Session
     public string $createdTime = '';
 
     public array $sessionId = [];
+    public array $sessionInfos = [];
+    public bool $ExclusiveSignin = false;
 }
 
 trait SessionTrait
@@ -49,7 +51,7 @@ trait SessionTrait
 
     public function getSession(string $name, string $application): ?array
     {
-        $sessionPkId = $this->organizationName . '/' . $name . '/' . $application;
+        $sessionPkId = $this->getId($name) . '/' . $application;
         $url         = $this->getUrl('get-session', ['sessionPkId' => $sessionPkId]);
         return $this->doGetBytes($url);
     }
@@ -76,7 +78,7 @@ trait SessionTrait
 
     private function modifySession(string $action, Session $session, array $columns): bool
     {
-        $session->owner = $this->organizationName;
+        $session->owner = $this->getOwner($session->owner, $this->organizationName);
         $queryMap       = ['id' => $session->owner . '/' . $session->name];
         if (!empty($columns)) {
             $queryMap['columns'] = implode(',', $columns);

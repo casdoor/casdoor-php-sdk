@@ -67,25 +67,41 @@ class Organization
     public float  $userBalance     = 0.0;
     public float  $balanceCredit   = 0.0;
     public string $balanceCurrency = '';
+    public int $passwordHistoryCount = 0;
+    public int $tokenRetentionDays = 0;
+    public int $recordRetentionDays = 0;
+    public bool $usePermanentAvatar = false;
+    public string $defaultTokenFormat = '';
+    public array $defaultTokenFields = [];
+    public bool $enableExclusiveSignin = false;
+    public int $maxSessions = 0;
+    public bool $disableConsole = false;
+    public string $accountMenu = '';
+    public string $dcrPolicy = '';
+    public array $ldapAttributes = [];
+    public string $kerberosRealm = '';
+    public string $kerberosKdcHost = '';
+    public string $kerberosKeytab = '';
+    public string $kerberosServiceName = '';
 }
 
 trait OrganizationTrait
 {
     public function getOrganization(string $name): ?array
     {
-        $url = $this->getUrl('get-organization', ['id' => 'admin/' . $name]);
+        $url = $this->getUrl('get-organization', ['id' => $this->getAdminId($name)]);
         return $this->doGetBytes($url);
     }
 
     public function getOrganizations(): array
     {
-        $url = $this->getUrl('get-organizations', ['owner' => $this->organizationName]);
+        $url = $this->getUrl('get-organizations', ['owner' => 'admin']);
         return $this->doGetBytes($url);
     }
 
     public function getOrganizationNames(): array
     {
-        $url = $this->getUrl('get-organization-names', ['owner' => $this->organizationName]);
+        $url = $this->getUrl('get-organization-names', ['owner' => 'admin']);
         return $this->doGetBytes($url);
     }
 
@@ -106,9 +122,7 @@ trait OrganizationTrait
 
     private function modifyOrganization(string $action, Organization $organization): bool
     {
-        if ($organization->owner === '') {
-            $organization->owner = 'admin';
-        }
+        $organization->owner = $this->getOwner($organization->owner, 'admin');
         $queryMap = ['id' => $organization->owner . '/' . $organization->name];
         $postData = json_encode($organization, JSON_THROW_ON_ERROR);
         $response = $this->doPost($action, $queryMap, $postData);

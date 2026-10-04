@@ -19,8 +19,12 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // Enforcer has the same definition as https://github.com/casdoor/casdoor/blob/master/object/enforcer.go
-class Enforcer
+class Enforcer implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['modelCfg'];
+
     public string $owner       = '';
     public string $name        = '';
     public string $createdTime = '';
@@ -30,6 +34,7 @@ class Enforcer
 
     public string $model   = '';
     public string $adapter = '';
+    public array $modelCfg = [];
     public bool   $isEnabled = false;
 }
 
@@ -53,7 +58,7 @@ trait EnforcerTrait
 
     public function getEnforcer(string $name): ?array
     {
-        $url = $this->getUrl('get-enforcer', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-enforcer', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -74,7 +79,7 @@ trait EnforcerTrait
 
     private function modifyEnforcer(string $action, Enforcer $enforcer): bool
     {
-        $enforcer->owner = $this->organizationName;
+        $enforcer->owner = $this->getOwner($enforcer->owner, $this->organizationName);
         $queryMap        = ['id' => $enforcer->owner . '/' . $enforcer->name];
         $postData        = json_encode($enforcer, JSON_THROW_ON_ERROR);
         $response        = $this->doPost($action, $queryMap, $postData);

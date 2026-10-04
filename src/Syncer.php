@@ -40,9 +40,16 @@ class Syncer
     public string $affiliationTable = '';
     public string $avatarBaseUrl    = '';
     public string $errorText        = '';
-    public int    $syncInterval     = 0;
-    public bool   $isReadOnly       = false;
-    public bool   $isEnabled        = false;
+    public string $sslMode = '';
+    public string $sshType = '';
+    public string $sshHost = '';
+    public int $sshPort = 0;
+    public string $sshUser = '';
+    public string $sshPassword = '';
+    public string $cert = '';
+    public int $syncInterval = 0;
+    public bool $isReadOnly = false;
+    public bool $isEnabled = false;
 }
 
 trait SyncerTrait
@@ -65,7 +72,7 @@ trait SyncerTrait
 
     public function getSyncer(string $name): ?array
     {
-        $url = $this->getUrl('get-syncer', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-syncer', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -86,7 +93,7 @@ trait SyncerTrait
 
     private function modifySyncer(string $action, Syncer $syncer): bool
     {
-        $syncer->owner = $this->organizationName;
+        $syncer->owner = $this->getOwner($syncer->owner, $this->organizationName);
         $queryMap      = ['id' => $syncer->owner . '/' . $syncer->name];
         $postData      = json_encode($syncer, JSON_THROW_ON_ERROR);
         $response      = $this->doPost($action, $queryMap, $postData);

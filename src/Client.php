@@ -50,4 +50,8 @@ class Client extends CasdoorClient
     use EmailTrait;
     use SmsTrait;
     use LdapTrait;
+    use RecordTrait;
+    use EnforceTrait;
+    use MfaTrait;
+    use NotificationTrait;
 }

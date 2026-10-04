@@ -28,6 +28,10 @@ class CasdoorClient
     public string $certificate;
     public string $organizationName;
     public string $applicationName;
+    /** @var array<string, string> the HTTP headers added to all the API requests, e.g. Accept-Language */
+    public array $customHeaders = [];
+    /** when set by withAccessToken(), the APIs are called as the user who owns the access token */
+    public string $accessToken = '';
 
     private HttpClient $http;
 
@@ -37,7 +41,8 @@ class CasdoorClient
         string $clientSecret,
         string $certificate,
         string $organizationName,
-        string $applicationName
+        string $applicationName,
+        array $customHeaders = []
     ) {
         $this->endpoint         = rtrim($endpoint, '/');
         $this->clientId         = $clientId;
@@ -45,7 +50,31 @@ class CasdoorClient
         $this->certificate      = $certificate;
         $this->organizationName = $organizationName;
         $this->applicationName  = $applicationName;
-        $this->http             = new HttpClient($clientId, $clientSecret);
+        $this->customHeaders    = $customHeaders;
+        $this->http             = new HttpClient($clientId, $clientSecret, '', $customHeaders);
+    }
+
+    /**
+     * Returns a new client that calls the APIs as the user who owns the access token
+     * (Authorization: Bearer) instead of as the application. The current client is not changed.
+     */
+    public function withAccessToken(string $accessToken): static
+    {
+        $client              = clone $this;
+        $client->accessToken = $accessToken;
+        $client->http        = new HttpClient($this->clientId, $this->clientSecret, $accessToken, $this->customHeaders);
+        return $client;
+    }
+
+    /**
+     * Sets the HTTP headers added to all the API requests.
+     *
+     * @param array<string, string> $headers
+     */
+    public function setCustomHeaders(array $headers): void
+    {
+        $this->customHeaders = $headers;
+        $this->http          = new HttpClient($this->clientId, $this->clientSecret, $this->accessToken, $headers);
     }
 
     public function getUrl(string $action, array $queryMap = []): string
@@ -58,9 +87,47 @@ class CasdoorClient
         return $url;
     }
 
+    /**
+     * Returns name as is if it's already an "owner/name" ID, otherwise prefixes it with the client's organization.
+     */
     public function getId(string $name): string
     {
-        return $this->organizationName . '/' . $name;
+        return str_contains($name, '/') ? $name : $this->organizationName . '/' . $name;
+    }
+
+    /**
+     * getId() for the object types that are owned by "admin" instead of an organization.
+     */
+    public function getAdminId(string $name): string
+    {
+        return str_contains($name, '/') ? $name : 'admin/' . $name;
+    }
+
+    /**
+     * Keeps the caller-provided owner and only falls back to $defaultOwner when it's empty.
+     */
+    public function getOwner(string $owner, string $defaultOwner): string
+    {
+        return $owner !== '' ? $owner : $defaultOwner;
+    }
+
+    /**
+     * Returns the raw response body of a GET request.
+     */
+    public function doGetBytesRaw(string $url): string
+    {
+        return $this->http->request('GET', $url);
+    }
+
+    /**
+     * Returns the raw response body of a POST request.
+     */
+    public function doPostBytesRaw(string $url, string $contentType, string $body): string
+    {
+        return $this->http->request('POST', $url, [
+            'headers' => ['Content-Type' => $contentType !== '' ? $contentType : 'text/plain;charset=UTF-8'],
+            'body'    => $body,
+        ]);
     }
 
     public function doGetResponse(string $url): array

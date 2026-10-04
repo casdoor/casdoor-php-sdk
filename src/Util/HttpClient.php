@@ -27,39 +27,72 @@ class HttpClient
     private Client $client;
     private string $clientId;
     private string $clientSecret;
+    private string $accessToken;
+    /** @var array<string, string> */
+    private array $headers;
 
-    public function __construct(string $clientId, string $clientSecret)
+    /**
+     * @param string                $accessToken when set, the requests are made as the user who owns it (Authorization: Bearer)
+     * @param array<string, string> $headers     the headers added to all the requests, e.g. Accept-Language
+     */
+    public function __construct(string $clientId, string $clientSecret, string $accessToken = '', array $headers = [], ?Client $client = null)
     {
         $this->clientId     = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->client       = new Client();
+        $this->accessToken  = $accessToken;
+        $this->headers      = $headers;
+        $this->client       = $client ?? new Client();
+    }
+
+    private function options(array $options = []): array
+    {
+        $headers = array_merge($this->headers, $options['headers'] ?? []);
+        if ($this->accessToken !== '') {
+            $headers['Authorization'] = 'Bearer ' . $this->accessToken;
+        } else {
+            $options['auth'] = [$this->clientId, $this->clientSecret];
+        }
+        $options['headers'] = $headers;
+        // Casdoor returns its JSON error response with 403 when the caller has no permission
+        $options['http_errors'] = false;
+        return $options;
+    }
+
+    /**
+     * Sends the request and returns the raw response body, like DoGetBytesRaw() and DoPostBytesRaw() of casdoor-go-sdk.
+     */
+    public function request(string $method, string $url, array $options = []): string
+    {
+        try {
+            $response = $this->client->request($method, $url, $this->options($options));
+        } catch (GuzzleException $e) {
+            throw new CasdoorException($e->getMessage(), $e->getCode(), $e);
+        }
+        $body   = (string) $response->getBody();
+        $status = $response->getStatusCode();
+        if ($status !== 200 && $status !== 403) {
+            throw new CasdoorException(sprintf('status code: %d, body: %s', $status, $body), $status);
+        }
+        return $body;
+    }
+
+    private function decode(string $body): array
+    {
+        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        if (isset($data['status']) && $data['status'] !== 'ok') {
+            throw new CasdoorException($data['msg'] ?? 'Unknown error');
+        }
+        return $data;
     }
 
     public function get(string $url): array
     {
-        try {
-            $response = $this->client->request('GET', $url, [
-                'auth' => [$this->clientId, $this->clientSecret],
-            ]);
-        } catch (GuzzleException $e) {
-            throw new CasdoorException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        $body = (string) $response->getBody();
-        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-
-        if (isset($data['status']) && $data['status'] !== 'ok') {
-            throw new CasdoorException($data['msg'] ?? 'Unknown error');
-        }
-
-        return $data;
+        return $this->decode($this->request('GET', $url));
     }
 
     public function post(string $url, mixed $postData, bool $isForm = false, bool $isFile = false): array
     {
-        $options = [
-            'auth' => [$this->clientId, $this->clientSecret],
-        ];
+        $options = [];
 
         if ($isForm) {
             if ($isFile) {
@@ -83,19 +116,6 @@ class HttpClient
             $options['headers'] = ['Content-Type' => 'text/plain;charset=UTF-8'];
         }
 
-        try {
-            $response = $this->client->request('POST', $url, $options);
-        } catch (GuzzleException $e) {
-            throw new CasdoorException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        $body = (string) $response->getBody();
-        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-
-        if (isset($data['status']) && $data['status'] !== 'ok') {
-            throw new CasdoorException($data['msg'] ?? 'Unknown error');
-        }
-
-        return $data;
+        return $this->decode($this->request('POST', $url, $options));
     }
 }

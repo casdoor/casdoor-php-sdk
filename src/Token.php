@@ -38,8 +38,14 @@ class Token
     public string $scope            = '';
     public string $tokenType        = '';
     public string $codeChallenge    = '';
-    public bool   $codeIsUsed       = false;
-    public int    $codeExpireIn     = 0;
+    public string $idToken = '';
+    public string $idTokenHash = '';
+    public string $grantType = '';
+    public bool $codeIsUsed = false;
+    public int $codeExpireIn = 0;
+    public string $resource = '';
+    public string $dPoPJkt = '';
+    public string $sessionId = '';
 }
 
 class IntrospectTokenResult
@@ -55,6 +61,8 @@ class IntrospectTokenResult
     public array  $aud       = [];
     public string $iss       = '';
     public string $jti       = '';
+    public string $client_id = '';
+    public string $token_type = '';
 }
 
 trait TokenTrait
@@ -77,7 +85,7 @@ trait TokenTrait
 
     public function getToken(string $name): ?array
     {
-        $url = $this->getUrl('get-token', ['id' => 'admin/' . $name]);
+        $url = $this->getUrl('get-token', ['id' => $this->getAdminId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -112,8 +120,8 @@ trait TokenTrait
 
     private function modifyToken(string $action, Token $token, array $columns): bool
     {
-        $token->owner = 'admin';
-        $queryMap     = ['id' => 'admin/' . $token->name];
+        $token->owner = $this->getOwner($token->owner, 'admin');
+        $queryMap     = ['id' => $token->owner . '/' . $token->name];
         if (!empty($columns)) {
             $queryMap['columns'] = implode(',', $columns);
         }

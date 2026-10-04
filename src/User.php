@@ -21,6 +21,10 @@ namespace Casdoor;
 // User has the same definition as https://github.com/casdoor/casdoor/blob/master/object/user.go
 class User implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['properties'];
+
     public string $owner       = '';
     public string $name        = '';
     public string $createdTime = '';
@@ -193,7 +197,7 @@ class User implements \JsonSerializable
     public array  $cart                = [];
 
     public string $ldap       = '';
-    public array  $properties = [];
+    public array $properties = [];
 
     public array  $roles       = [];
     public array  $permissions = [];
@@ -209,19 +213,31 @@ class User implements \JsonSerializable
     public string $mfaRememberDeadline = '';
     public bool   $needUpdatePassword  = false;
     public string $ipWhitelist         = '';
+    public string $azuread = '';
+    public string $azureadb2c = '';
+    public string $battlenet = '';
+    public string $cloudfoundry = '';
+    public string $digitalocean = '';
+    public string $eveonline = '';
+    public string $influxcloud = '';
+    public string $microsoftonline = '';
+    public string $onedrive = '';
+    public string $salesforce = '';
+    public string $telegram = '';
+    public string $tiktok = '';
+    public string $metamask = '';
+    public string $web3onboard = '';
+    public string $oidc = '';
+    public mixed $webauthnCredentials = null;
+    public int $uidNumber = 0;
+    public array $thirdPartyLinks = [];
+    public array $applicationScopes = [];
 
     public function getId(): string
     {
         return $this->owner . '/' . $this->name;
     }
 
-    public function jsonSerialize(): mixed
-    {
-        $data = get_object_vars($this);
-        // properties is a map in Casdoor, so an empty one must be encoded as {} instead of []
-        $data['properties'] = (object) $this->properties;
-        return $data;
-    }
 }
 
 trait UserTrait
@@ -272,7 +288,7 @@ trait UserTrait
 
     public function getUser(string $name): ?array
     {
-        $queryMap = ['id' => $this->organizationName . '/' . $name];
+        $queryMap = ['id' => $this->getId($name)];
         $url      = $this->getUrl('get-user', $queryMap);
         return $this->doGetBytes($url);
     }
@@ -311,6 +327,32 @@ trait UserTrait
         return ($response['status'] ?? '') === 'ok';
     }
 
+    /**
+     * Gets the user of the access token, i.e. "who am I", the client must be created by withAccessToken().
+     */
+    public function getAccount(): ?array
+    {
+        return $this->doGetBytes($this->getUrl('get-account'));
+    }
+
+    /**
+     * Updates the user identified by its "owner/name" ID, so the user can be renamed.
+     */
+    public function updateUserById(string $id, User $user): bool
+    {
+        $user->owner = $this->getOwner($user->owner, $this->organizationName);
+        return $this->boolFromResponse($this->modifyEntity('update-user', $id, $user, []));
+    }
+
+    /**
+     * Updates the user identified by its user ID (the "id" field of the user).
+     */
+    public function updateUserByUserId(string $owner, string $userId, User $user): bool
+    {
+        $postData = json_encode($user, JSON_THROW_ON_ERROR);
+        return $this->boolFromResponse($this->doPost('update-user', ['owner' => $owner, 'userId' => $userId], $postData));
+    }
+
     public function updateUser(User $user): bool
     {
         return $this->modifyUser('update-user', $user, []);
@@ -333,19 +375,20 @@ trait UserTrait
 
     public function checkUserPassword(User $user): bool
     {
-        $queryMap = ['id' => $user->getId()];
-        if ($user->owner === '') {
-            $user->owner = $this->organizationName;
+        $user->owner = $this->getOwner($user->owner, $this->organizationName);
+        $postData    = json_encode($user, JSON_THROW_ON_ERROR);
+        try {
+            $this->doPost('check-user-password', ['id' => $user->getId()], $postData);
+        } catch (Exceptions\CasdoorException $e) {
+            return false;
         }
-        $postData = json_encode($user, JSON_THROW_ON_ERROR);
-        $response = $this->doPost('check-user-password', $queryMap, $postData);
-        return ($response['status'] ?? '') === 'ok';
+        return true;
     }
 
     private function modifyUser(string $action, User $user, array $columns): bool
     {
         if ($user->owner === '') {
-            $user->owner = $this->organizationName;
+            $user->owner = $this->getOwner($user->owner, $this->organizationName);
         }
         $queryMap = ['id' => $user->getId()];
         if (!empty($columns)) {

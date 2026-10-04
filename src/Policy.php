@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Casdoor;
 
-class CasbinRule
+class CasbinRule implements \JsonSerializable
 {
     public int    $id    = 0;
     public string $ptype = '';
@@ -28,13 +28,40 @@ class CasbinRule
     public string $v3    = '';
     public string $v4    = '';
     public string $v5    = '';
+
+    public static function new(string $ptype, string ...$values): self
+    {
+        $rule        = new self();
+        $rule->ptype = $ptype;
+        foreach (array_values($values) as $i => $value) {
+            $rule->{'v' . $i} = $value;
+        }
+        return $rule;
+    }
+
+    /**
+     * The policies are xorm CasbinRule objects without JSON tags in Casdoor, so the keys are capitalized.
+     */
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'Id'    => $this->id,
+            'Ptype' => $this->ptype,
+            'V0'    => $this->v0,
+            'V1'    => $this->v1,
+            'V2'    => $this->v2,
+            'V3'    => $this->v3,
+            'V4'    => $this->v4,
+            'V5'    => $this->v5,
+        ];
+    }
 }
 
 class PolicyFilter
 {
-    public string  $ptype       = '';
-    public ?int    $fieldIndex  = null;
-    public array   $fieldValues = [];
+    public string $ptype = '';
+    public int $fieldIndex = 0;
+    public array $fieldValues = [];
 }
 
 trait PolicyTrait
@@ -42,7 +69,7 @@ trait PolicyTrait
     public function getPolicies(string $enforcerName, string $adapterId): array
     {
         $url = $this->getUrl('get-policies', [
-            'id'        => $this->organizationName . '/' . $enforcerName,
+            'id'        => $this->getId($enforcerName),
             'adapterId' => $adapterId,
         ]);
         return $this->doGetBytes($url);
@@ -51,7 +78,7 @@ trait PolicyTrait
     public function getFilteredPolicies(string $enforcerId, array $filters): array
     {
         $postData = json_encode($filters, JSON_THROW_ON_ERROR);
-        $response = $this->doPost('get-filtered-policies', ['id' => $enforcerId], $postData);
+        $response = $this->doPost('get-filtered-policies', ['id' => $this->getId($enforcerId)], $postData);
         return $response['data'] ?? [];
     }
 
@@ -72,7 +99,7 @@ trait PolicyTrait
 
     private function modifyPolicy(string $action, Enforcer $enforcer, array $policies): bool
     {
-        $enforcer->owner = $this->organizationName;
+        $enforcer->owner = $this->getOwner($enforcer->owner, $this->organizationName);
         $queryMap        = ['id' => $enforcer->owner . '/' . $enforcer->name];
         $postData        = $action === 'update-policy'
             ? json_encode($policies, JSON_THROW_ON_ERROR)

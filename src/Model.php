@@ -39,6 +39,7 @@ class Model
     public array  $children = [];
 
     public string $modelText = '';
+    public string $description = '';
     public bool   $isEnabled = false;
 }
 
@@ -62,7 +63,7 @@ trait ModelTrait
 
     public function getModel(string $name): ?array
     {
-        $url = $this->getUrl('get-model', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-model', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -83,7 +84,7 @@ trait ModelTrait
 
     private function modifyModel(string $action, Model $model): bool
     {
-        $model->owner = $this->organizationName;
+        $model->owner = $this->getOwner($model->owner, $this->organizationName);
         $queryMap     = ['id' => $model->owner . '/' . $model->name];
         $postData     = json_encode($model, JSON_THROW_ON_ERROR);
         $response     = $this->doPost($action, $queryMap, $postData);

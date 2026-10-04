@@ -19,8 +19,12 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // Ldap has the same definition as https://github.com/casdoor/casdoor/blob/master/object/ldap.go
-class Ldap
+class Ldap implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['customAttributes'];
+
     public string $id          = '';
     public string $owner       = '';
     public string $createdTime = '';
@@ -37,14 +41,21 @@ class Ldap
     public array  $filterFields        = [];
     public string $defaultGroup        = '';
     public string $passwordType        = '';
-    public array  $customAttributes    = [];
+    public array $customAttributes    = [];
 
     public int    $autoSync = 0;
     public string $lastSync = '';
+    public array $defaultGroups = [];
+    public bool $enableGroups = false;
+    public bool $enablePasswordReset = false;
 }
 
-class LdapUser
+class LdapUser implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['attributes'];
+
     public string $uidNumber             = '';
     public string $uid                   = '';
     public string $cn                    = '';
@@ -65,20 +76,26 @@ class LdapUser
     public string $groupId               = '';
     public string $address               = '';
     public string $memberOf              = '';
-    public array  $attributes            = [];
+    public string $Mail = '';
+    public string $EmailAddress = '';
+    public string $TelephoneNumber = '';
+    public string $MobileTelephoneNumber = '';
+    public string $RegisteredAddress = '';
+    public string $PostalAddress = '';
+    public array $attributes = [];
 }
 
 trait LdapTrait
 {
     public function getLdaps(): array
     {
-        $url = $this->getUrl('get-ldaps', ['owner' => 'admin']);
+        $url = $this->getUrl('get-ldaps', ['owner' => $this->organizationName]);
         return $this->doGetBytes($url);
     }
 
     public function getLdap(string $id): ?array
     {
-        $url = $this->getUrl('get-ldap', ['id' => 'admin/' . $id]);
+        $url = $this->getUrl('get-ldap', ['id' => $this->getId($id)]);
         return $this->doGetBytes($url);
     }
 
@@ -99,13 +116,13 @@ trait LdapTrait
 
     public function getLdapUsers(string $id): array
     {
-        $url = $this->getUrl('get-ldap-users', ['id' => $this->organizationName . '/' . $id]);
+        $url = $this->getUrl('get-ldap-users', ['id' => $this->getId($id)]);
         return $this->doGetBytes($url);
     }
 
     public function syncLdapUsers(string $id, array $users): array
     {
-        $queryMap = ['id' => $this->organizationName . '/' . $id];
+        $queryMap = ['id' => $this->getId($id)];
         $postData = json_encode($users, JSON_THROW_ON_ERROR);
         $response = $this->doPost('sync-ldap-users', $queryMap, $postData);
         return $response['data'] ?? [];
@@ -120,9 +137,7 @@ trait LdapTrait
 
     private function modifyLdap(string $action, Ldap $ldap): bool
     {
-        if ($ldap->owner === '') {
-            $ldap->owner = 'admin';
-        }
+        $ldap->owner = $this->getOwner($ldap->owner, $this->organizationName);
         $queryMap = ['id' => $ldap->owner . '/' . $ldap->id];
         $postData = json_encode($ldap, JSON_THROW_ON_ERROR);
         $response = $this->doPost($action, $queryMap, $postData);

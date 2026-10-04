@@ -36,6 +36,7 @@ class Subscription
     public string $endTime   = '';
     public string $period    = '';
     public string $state     = '';
+    public string $group = '';
 }
 
 trait SubscriptionTrait
@@ -58,7 +59,7 @@ trait SubscriptionTrait
 
     public function getSubscription(string $name): ?array
     {
-        $url = $this->getUrl('get-subscription', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-subscription', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -79,7 +80,7 @@ trait SubscriptionTrait
 
     private function modifySubscription(string $action, Subscription $subscription): bool
     {
-        $subscription->owner = $this->organizationName;
+        $subscription->owner = $this->getOwner($subscription->owner, $this->organizationName);
         $queryMap            = ['id' => $subscription->owner . '/' . $subscription->name];
         $postData            = json_encode($subscription, JSON_THROW_ON_ERROR);
         $response            = $this->doPost($action, $queryMap, $postData);

@@ -30,13 +30,16 @@ class Webhook
     public string $url            = '';
     public string $method         = '';
     public string $contentType    = '';
-    public array  $headers        = [];
-    public array  $events         = [];
-    public array  $tokenFields    = [];
-    public array  $objectFields   = [];
-    public bool   $isUserExtended = false;
-    public bool   $singleOrgOnly  = false;
-    public bool   $isEnabled      = false;
+    public array $headers = [];
+    public array $events = [];
+    public array $tokenFields = [];
+    public array $objectFields = [];
+    public bool $isUserExtended = false;
+    public bool $singleOrgOnly = false;
+    public bool $isEnabled = false;
+    public int $maxRetries = 0;
+    public int $retryInterval = 0;
+    public bool $useExponentialBackoff = false;
 }
 
 trait WebhookTrait
@@ -59,7 +62,7 @@ trait WebhookTrait
 
     public function getWebhook(string $name): ?array
     {
-        $url = $this->getUrl('get-webhook', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-webhook', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -80,7 +83,7 @@ trait WebhookTrait
 
     private function modifyWebhook(string $action, Webhook $webhook): bool
     {
-        $webhook->owner = $this->organizationName;
+        $webhook->owner = $this->getOwner($webhook->owner, $this->organizationName);
         $queryMap       = ['id' => $webhook->owner . '/' . $webhook->name];
         $postData       = json_encode($webhook, JSON_THROW_ON_ERROR);
         $response       = $this->doPost($action, $queryMap, $postData);

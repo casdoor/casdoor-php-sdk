@@ -38,6 +38,8 @@ class Order
 
     public string $state   = '';
     public string $message = '';
+    public string $couponName = '';
+    public float $couponDiscount = 0.0;
 
     public function getId(): string
     {
@@ -71,7 +73,7 @@ trait OrderTrait
 
     public function getOrder(string $name): ?array
     {
-        $url = $this->getUrl('get-order', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-order', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -92,14 +94,44 @@ trait OrderTrait
 
     public function cancelOrder(string $name): bool
     {
-        $queryMap = ['id' => $this->organizationName . '/' . $name];
+        $queryMap = ['id' => $this->getId($name)];
         $response = $this->doPost('cancel-order', $queryMap, '');
         return $this->boolFromResponse($response);
     }
 
+    /**
+     * Places an order of the products, e.g. [['name' => 'product', 'quantity' => 1]], for the user.
+     */
+    public function placeOrder(array $productInfos, string $userName = ''): array
+    {
+        $queryMap = ['owner' => $this->organizationName];
+        if ($userName !== '') {
+            $queryMap['userName'] = $userName;
+        }
+        $postData = json_encode(['productInfos' => $productInfos], JSON_THROW_ON_ERROR);
+        return $this->doPost('place-order', $queryMap, $postData)['data'];
+    }
+
+    /**
+     * Creates a payment of the order with the payment provider.
+     */
+    public function payOrder(string $orderName, string $providerName): array
+    {
+        $queryMap = ['id' => $this->getId($orderName), 'providerName' => $providerName];
+        return $this->doPost('pay-order', $queryMap, '')['data'];
+    }
+
+    /**
+     * Places an order of a single product, $providerName is kept for compatibility.
+     */
+    public function buyProduct(string $name, string $providerName, string $userName = ''): array
+    {
+        return $this->placeOrder([['name' => $name, 'quantity' => 1]], $userName);
+    }
+
     private function modifyOrder(string $action, Order $order): bool
     {
-        $order->owner = $this->organizationName;
+        $order->owner = $this->getOwner($order->owner, $this->organizationName);
         $queryMap     = ['id' => $order->owner . '/' . $order->name];
         $postData     = json_encode($order, JSON_THROW_ON_ERROR);
         $response     = $this->doPost($action, $queryMap, $postData);

@@ -46,14 +46,16 @@ class Payment
     public string $invoiceTaxId  = '';
     public string $invoiceRemark = '';
     public string $invoiceUrl    = '';
+    public string $productName = '';
+    public string $productDisplayName = '';
+    public string $order = '';
+    public mixed $orderObj = null;
+    public string $outOrderId = '';
+    public string $payUrl = '';
+    public string $successUrl = '';
+    public string $state = '';
+    public string $message = '';
 
-    public string  $order      = '';
-    public ?array  $orderObj   = null;
-    public string  $outOrderId = '';
-    public string  $payUrl     = '';
-    public string  $successUrl = '';
-    public string  $state      = '';
-    public string  $message    = '';
 }
 
 trait PaymentTrait
@@ -76,7 +78,7 @@ trait PaymentTrait
 
     public function getPayment(string $name): ?array
     {
-        $url = $this->getUrl('get-payment', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-payment', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -117,7 +119,7 @@ trait PaymentTrait
 
     private function modifyPayment(string $action, Payment $payment): bool
     {
-        $payment->owner = $this->organizationName;
+        $payment->owner = $this->getOwner($payment->owner, $this->organizationName);
         $queryMap       = ['id' => $payment->owner . '/' . $payment->name];
         $postData       = json_encode($payment, JSON_THROW_ON_ERROR);
         $response       = $this->doPost($action, $queryMap, $postData);

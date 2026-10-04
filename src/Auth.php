@@ -54,9 +54,9 @@ trait AuthTrait
         return sprintf('%s/account%s', $this->endpoint, $param);
     }
 
-    public function getOAuthToken(string $code, string $state): AccessToken
+    private function getOAuthProvider(): GenericProvider
     {
-        $provider = new GenericProvider([
+        return new GenericProvider([
             'clientId'                => $this->clientId,
             'clientSecret'            => $this->clientSecret,
             'redirectUri'             => '',
@@ -64,7 +64,63 @@ trait AuthTrait
             'urlAccessToken'          => sprintf('%s/api/login/oauth/access_token', $this->endpoint),
             'urlResourceOwnerDetails' => '',
         ]);
+    }
 
-        return $provider->getAccessToken('authorization_code', ['code' => $code]);
+    public function getOAuthToken(string $code, string $state): AccessToken
+    {
+        return $this->getOAuthProvider()->getAccessToken('authorization_code', ['code' => $code]);
+    }
+
+    /**
+     * Gets the token with the Resource Owner Password Credentials grant.
+     */
+    public function getOAuthTokenByPassword(string $username, string $password): AccessToken
+    {
+        return $this->getOAuthProvider()->getAccessToken('password', ['username' => $username, 'password' => $password]);
+    }
+
+    /**
+     * Signs in as any user of the organization with the organization's master password.
+     */
+    public function impersonateUser(string $username, string $masterPassword): AccessToken
+    {
+        return $this->getOAuthTokenByPassword($username, $masterPassword);
+    }
+
+    public function refreshOAuthToken(string $refreshToken): AccessToken
+    {
+        $provider = new GenericProvider([
+            'clientId'                => $this->clientId,
+            'clientSecret'            => $this->clientSecret,
+            'redirectUri'             => '',
+            'urlAuthorize'            => sprintf('%s/api/login/oauth/authorize', $this->endpoint),
+            'urlAccessToken'          => sprintf('%s/api/login/oauth/refresh_token', $this->endpoint),
+            'urlResourceOwnerDetails' => '',
+        ]);
+        return $provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
+    }
+
+    /**
+     * Signs the user out of all the applications and devices (SSO logout).
+     */
+    public function logout(string $accessToken): void
+    {
+        $this->ssoLogout($accessToken, true);
+    }
+
+    /**
+     * Only signs the user out of the session of the access token.
+     */
+    public function logoutCurrentSession(string $accessToken): void
+    {
+        $this->ssoLogout($accessToken, false);
+    }
+
+    private function ssoLogout(string $accessToken, bool $logoutAll): void
+    {
+        if ($accessToken === '') {
+            throw new Exceptions\CasdoorException('logout() error: the accessToken should not be empty');
+        }
+        $this->withAccessToken($accessToken)->doPost('sso-logout', ['logoutAll' => $logoutAll ? 'true' : 'false'], '');
     }
 }

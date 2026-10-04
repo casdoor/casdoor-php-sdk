@@ -36,6 +36,8 @@ class Pricing
     public string $approver    = '';
     public string $approveTime = '';
     public string $state       = '';
+    public bool $isInviteOnly = false;
+    public array $users = [];
 }
 
 trait PricingTrait
@@ -58,7 +60,7 @@ trait PricingTrait
 
     public function getPricing(string $name): ?array
     {
-        $url = $this->getUrl('get-pricing', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-pricing', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -79,7 +81,7 @@ trait PricingTrait
 
     private function modifyPricing(string $action, Pricing $pricing): bool
     {
-        $pricing->owner = $this->organizationName;
+        $pricing->owner = $this->getOwner($pricing->owner, $this->organizationName);
         $queryMap       = ['id' => $pricing->owner . '/' . $pricing->name];
         $postData       = json_encode($pricing, JSON_THROW_ON_ERROR);
         $response       = $this->doPost($action, $queryMap, $postData);

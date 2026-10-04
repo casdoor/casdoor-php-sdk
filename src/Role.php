@@ -31,7 +31,8 @@ class Role
     public array $groups  = [];
     public array $roles   = [];
     public array $domains = [];
-    public bool  $isEnabled = false;
+    public bool $isEnabled = false;
+    public array $sourceGroups = [];
 }
 
 trait RoleTrait
@@ -54,7 +55,7 @@ trait RoleTrait
 
     public function getRole(string $name): ?array
     {
-        $url = $this->getUrl('get-role', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-role', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -80,7 +81,7 @@ trait RoleTrait
 
     private function modifyRole(string $action, Role $role, array $columns): bool
     {
-        $role->owner  = $this->organizationName;
+        $role->owner  = $this->getOwner($role->owner, $this->organizationName);
         $queryMap     = ['id' => $role->owner . '/' . $role->name];
         if (!empty($columns)) {
             $queryMap['columns'] = implode(',', $columns);

@@ -19,8 +19,12 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // Group has the same definition as https://github.com/casdoor/casdoor/blob/master/object/group.go
-class Group
+class Group implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['properties'];
+
     public string $owner       = '';
     public string $name        = '';
     public string $createdTime = '';
@@ -39,6 +43,10 @@ class Group
     public array  $children = [];
 
     public bool $isEnabled = false;
+    public string $parentName = '';
+    public bool $haveChildren = false;
+    public int $gidNumber = 0;
+    public array $properties = [];
 }
 
 trait GroupTrait
@@ -61,7 +69,7 @@ trait GroupTrait
 
     public function getGroup(string $name): ?array
     {
-        $url = $this->getUrl('get-group', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-group', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -82,7 +90,7 @@ trait GroupTrait
 
     private function modifyGroup(string $action, Group $group): bool
     {
-        $group->owner = $this->organizationName;
+        $group->owner = $this->getOwner($group->owner, $this->organizationName);
         $queryMap     = ['id' => $group->owner . '/' . $group->name];
         $postData     = json_encode($group, JSON_THROW_ON_ERROR);
         $response     = $this->doPost($action, $queryMap, $postData);

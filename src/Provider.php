@@ -19,8 +19,12 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // Provider has the same definition as https://github.com/casdoor/casdoor/blob/master/object/provider.go
-class Provider
+class Provider implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['userMapping', 'httpHeaders'];
+
     public string $owner       = '';
     public string $name        = '';
     public string $createdTime = '';
@@ -40,7 +44,7 @@ class Provider
     public string $customUserInfoUrl = '';
     public string $customLogo        = '';
     public string $scopes            = '';
-    public array  $userMapping       = [];
+    public array $userMapping       = [];
 
     public string $host       = '';
     public int    $port       = 0;
@@ -66,6 +70,14 @@ class Provider
     public bool   $enableSignAuthnRequest = false;
 
     public string $providerUrl = '';
+    public string $customLogoutUrl = '';
+    public array $httpHeaders = [];
+    public string $sslMode = '';
+    public string $emailRegex = '';
+    public bool $enableProxy = false;
+    public bool $enablePkce = false;
+    public bool $requireMessageAuthenticator = false;
+    public string $state = '';
 }
 
 trait ProviderTrait
@@ -88,7 +100,7 @@ trait ProviderTrait
 
     public function getProvider(string $name): ?array
     {
-        $url = $this->getUrl('get-provider', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-provider', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -109,7 +121,7 @@ trait ProviderTrait
 
     private function modifyProvider(string $action, Provider $provider): bool
     {
-        $provider->owner = $this->organizationName;
+        $provider->owner = $this->getOwner($provider->owner, $this->organizationName);
         $queryMap        = ['id' => $provider->owner . '/' . $provider->name];
         $postData        = json_encode($provider, JSON_THROW_ON_ERROR);
         $response        = $this->doPost($action, $queryMap, $postData);

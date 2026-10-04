@@ -59,7 +59,7 @@ trait AdapterTrait
 
     public function getAdapter(string $name): ?array
     {
-        $url = $this->getUrl('get-adapter', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-adapter', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -80,7 +80,7 @@ trait AdapterTrait
 
     private function modifyAdapter(string $action, Adapter $adapter): bool
     {
-        $adapter->owner = $this->organizationName;
+        $adapter->owner = $this->getOwner($adapter->owner, $this->organizationName);
         $queryMap       = ['id' => $adapter->owner . '/' . $adapter->name];
         $postData       = json_encode($adapter, JSON_THROW_ON_ERROR);
         $response       = $this->doPost($action, $queryMap, $postData);

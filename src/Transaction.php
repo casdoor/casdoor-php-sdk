@@ -63,7 +63,7 @@ trait TransactionTrait
 
     public function getTransaction(string $name): ?array
     {
-        $url = $this->getUrl('get-transaction', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-transaction', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -85,7 +85,7 @@ trait TransactionTrait
 
     public function updateTransaction(Transaction $transaction): bool
     {
-        $transaction->owner = $this->organizationName;
+        $transaction->owner = $this->getOwner($transaction->owner, $this->organizationName);
         $queryMap           = ['id' => $transaction->owner . '/' . $transaction->name];
         $postData           = json_encode($transaction, JSON_THROW_ON_ERROR);
         $response           = $this->doPost('update-transaction', $queryMap, $postData);
@@ -94,7 +94,7 @@ trait TransactionTrait
 
     public function deleteTransaction(Transaction $transaction): bool
     {
-        $transaction->owner = $this->organizationName;
+        $transaction->owner = $this->getOwner($transaction->owner, $this->organizationName);
         $queryMap           = ['id' => $transaction->owner . '/' . $transaction->name];
         $postData           = json_encode($transaction, JSON_THROW_ON_ERROR);
         $response           = $this->doPost('delete-transaction', $queryMap, $postData);
@@ -103,7 +103,7 @@ trait TransactionTrait
 
     private function modifyTransactionWithDryRun(string $action, Transaction $transaction, array $columns, bool $dryRun): array
     {
-        $transaction->owner = $this->organizationName;
+        $transaction->owner = $this->getOwner($transaction->owner, $this->organizationName);
         $queryMap           = ['id' => $transaction->owner . '/' . $transaction->name];
         if (!empty($columns)) {
             $queryMap['columns'] = implode(',', $columns);

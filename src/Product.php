@@ -19,8 +19,12 @@ declare(strict_types=1);
 namespace Casdoor;
 
 // Product has the same definition as https://github.com/casdoor/casdoor/blob/master/object/product.go
-class Product
+class Product implements \JsonSerializable
 {
+    use JsonMapFields;
+
+    public const MAP_FIELDS = ['properties'];
+
     public string $owner       = '';
     public string $name        = '';
     public string $createdTime = '';
@@ -43,6 +47,7 @@ class Product
     public string $state = '';
 
     public array $providerObjs = [];
+    public array $properties = [];
 }
 
 trait ProductTrait
@@ -65,7 +70,7 @@ trait ProductTrait
 
     public function getProduct(string $name): ?array
     {
-        $url = $this->getUrl('get-product', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-product', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -86,7 +91,7 @@ trait ProductTrait
 
     private function modifyProduct(string $action, Product $product): bool
     {
-        $product->owner = $this->organizationName;
+        $product->owner = $this->getOwner($product->owner, $this->organizationName);
         $queryMap       = ['id' => $product->owner . '/' . $product->name];
         $postData       = json_encode($product, JSON_THROW_ON_ERROR);
         $response       = $this->doPost($action, $queryMap, $postData);

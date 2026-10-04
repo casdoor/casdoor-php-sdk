@@ -68,14 +68,14 @@ trait InvitationTrait
 
     public function getInvitation(string $name): ?array
     {
-        $url = $this->getUrl('get-invitation', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-invitation', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
     public function getInvitationInfo(string $code, string $applicationName): ?array
     {
         $url = $this->getUrl('get-invitation-info', [
-            'applicationId' => 'admin/' . $applicationName,
+            'applicationId' => $this->getAdminId($applicationName),
             'code'          => $code,
         ]);
         return $this->doGetBytes($url);
@@ -104,7 +104,7 @@ trait InvitationTrait
     private function modifyInvitation(string $action, Invitation $invitation, array $columns): bool
     {
         if ($invitation->owner === '') {
-            $invitation->owner = $this->organizationName;
+            $invitation->owner = $this->getOwner($invitation->owner, $this->organizationName);
         }
         $queryMap = ['id' => $invitation->owner . '/' . $invitation->name];
         if (!empty($columns)) {

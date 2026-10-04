@@ -44,6 +44,9 @@ class Permission
     public string $approver    = '';
     public string $approveTime = '';
     public string $state       = '';
+    public array $sourceGroups = [];
+    public array $sourceRoles = [];
+    public string $expireTime = '';
 }
 
 trait PermissionTrait
@@ -56,7 +59,7 @@ trait PermissionTrait
 
     public function getPermissionsByRole(string $name): array
     {
-        $url = $this->getUrl('get-permissions-by-role', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-permissions-by-role', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -72,7 +75,7 @@ trait PermissionTrait
 
     public function getPermission(string $name): ?array
     {
-        $url = $this->getUrl('get-permission', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-permission', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -98,7 +101,7 @@ trait PermissionTrait
 
     private function modifyPermission(string $action, Permission $permission, array $columns): bool
     {
-        $permission->owner = $this->organizationName;
+        $permission->owner = $this->getOwner($permission->owner, $this->organizationName);
         $queryMap          = ['id' => $permission->owner . '/' . $permission->name];
         if (!empty($columns)) {
             $queryMap['columns'] = implode(',', $columns);

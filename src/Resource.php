@@ -42,8 +42,29 @@ trait ResourceTrait
 {
     public function getResource(string $id): ?array
     {
-        $url = $this->getUrl('get-resource', ['owner' => $this->organizationName, 'id' => $id]);
+        $url = $this->getUrl('get-resource', ['owner' => $this->organizationName, 'id' => $this->getId($id)]);
         return $this->doGetBytes($url);
+    }
+
+    public function getResourceEx(string $owner, string $name): ?array
+    {
+        return $this->getResource($owner . '/' . $name);
+    }
+
+    public function addResource(Resource $resource): bool
+    {
+        return $this->modifyResource('add-resource', $resource);
+    }
+
+    public function updateResource(Resource $resource): bool
+    {
+        return $this->modifyResource('update-resource', $resource);
+    }
+
+    private function modifyResource(string $action, Resource $resource): bool
+    {
+        $resource->owner = $this->getOwner($resource->owner, $this->organizationName);
+        return $this->boolFromResponse($this->modifyEntity($action, $resource->owner . '/' . $resource->name, $resource, []));
     }
 
     public function getResources(string $owner, string $user, string $field, string $value, string $sortField, string $sortOrder): array
@@ -83,10 +104,37 @@ trait ResourceTrait
         return [$response['data'], $response['data2']];
     }
 
+    /**
+     * Uploads a file like uploadResource() with the created time and the description, returns [file URL, resource name].
+     */
+    public function uploadResourceEx(string $user, string $tag, string $parent, string $fullFilePath, string $fileBytes, string $createdTime = '', string $description = ''): array
+    {
+        $queryMap = [
+            'owner'        => $this->organizationName,
+            'user'         => $user,
+            'application'  => $this->applicationName,
+            'tag'          => $tag,
+            'parent'       => $parent,
+            'fullFilePath' => $fullFilePath,
+            'createdTime'  => $createdTime,
+            'description'  => $description,
+        ];
+        $response = $this->doPost('upload-resource', $queryMap, $fileBytes, true, true);
+        return [$response['data'], $response['data2']];
+    }
+
+    /**
+     * Deletes the resource, the "Direct" tag also deletes the file from the storage provider.
+     */
+    public function deleteResourceWithTag(Resource $resource, string $tag): bool
+    {
+        return $this->deleteResource($resource, $tag);
+    }
+
     public function deleteResource(Resource $resource, string $tag = ''): bool
     {
         if ($resource->owner === '') {
-            $resource->owner = $this->organizationName;
+            $resource->owner = $this->getOwner($resource->owner, $this->organizationName);
         }
         $queryMap = ['tag' => $tag];
         $postData = json_encode($resource, JSON_THROW_ON_ERROR);

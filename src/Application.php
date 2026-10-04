@@ -99,6 +99,27 @@ class Application
     public int   $codeResendTimeout      = 0;
 
     public ?array $certObj = null;
+    public string $category = '';
+    public string $type = '';
+    public array $scopes = [];
+    public string $logoDark = '';
+    public string $defaultTag = '';
+    public string $pageHtml = '';
+    public bool $enableGuestSignin = false;
+    public int $maxSessions = 0;
+    public string $samlSingleLogoutUrl = '';
+    public string $samlC14nPrefix = '';
+    public string $clientCert = '';
+    public string $backchannelLogoutUri = '';
+    public string $tokenGroupFormat = '';
+    public array $customScopes = [];
+    public string $domain = '';
+    public array $otherDomains = [];
+    public string $upstreamHost = '';
+    public string $sslMode = '';
+    public string $sslCert = '';
+    public mixed $CertObj = null;
+    public string $registrationAccessToken = '';
 }
 
 trait ApplicationTrait
@@ -120,7 +141,7 @@ trait ApplicationTrait
 
     public function getApplication(string $name): ?array
     {
-        $url = $this->getUrl('get-application', ['id' => 'admin/' . $name]);
+        $url = $this->getUrl('get-application', ['id' => $this->getAdminId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -141,9 +162,7 @@ trait ApplicationTrait
 
     private function modifyApplication(string $action, Application $application): bool
     {
-        if ($application->owner === '') {
-            $application->owner = 'admin';
-        }
+        $application->owner = $this->getOwner($application->owner, 'admin');
         $queryMap = ['id' => $application->owner . '/' . $application->name];
         $postData = json_encode($application, JSON_THROW_ON_ERROR);
         $response = $this->doPost($action, $queryMap, $postData);

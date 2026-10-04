@@ -36,6 +36,12 @@ class Cert
     public string $privateKey             = '';
     public string $authorityPublicKey     = '';
     public string $authorityRootPublicKey = '';
+    public string $expireTime = '';
+    public string $domainExpireTime = '';
+    public string $provider = '';
+    public string $account = '';
+    public string $accessKey = '';
+    public string $accessSecret = '';
 }
 
 trait CertTrait
@@ -54,7 +60,7 @@ trait CertTrait
 
     public function getCert(string $name): ?array
     {
-        $url = $this->getUrl('get-cert', ['id' => $this->organizationName . '/' . $name]);
+        $url = $this->getUrl('get-cert', ['id' => $this->getId($name)]);
         return $this->doGetBytes($url);
     }
 
@@ -76,7 +82,7 @@ trait CertTrait
     private function modifyCert(string $action, Cert $cert): bool
     {
         if ($cert->owner === '') {
-            $cert->owner = $this->organizationName;
+            $cert->owner = $this->getOwner($cert->owner, $this->organizationName);
         }
         $queryMap = ['id' => $cert->owner . '/' . $cert->name];
         $postData = json_encode($cert, JSON_THROW_ON_ERROR);
