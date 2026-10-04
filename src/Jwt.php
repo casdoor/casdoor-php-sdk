@@ -39,6 +39,11 @@ trait JwtTrait
 
         $header = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[0])), true);
         $alg    = $header['alg'] ?? 'RS256';
+        // Only accept the asymmetric algorithms Casdoor signs with, otherwise a token signed with HS256
+        // and the public certificate as the secret would pass the verification
+        if (!in_array($alg, ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512'], true)) {
+            throw new CasdoorException('Unsupported JWT algorithm: ' . $alg);
+        }
 
         $decoded = FirebaseJWT::decode($token, new Key($certificate, $alg));
 

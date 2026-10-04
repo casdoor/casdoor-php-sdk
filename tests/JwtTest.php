@@ -40,6 +40,20 @@ class JwtTest extends TestCase
         $this->assertSame('built-in', $claims['owner']);
     }
 
+    public function testRejectHmacSignedWithCertificate(): void
+    {
+        $key       = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+        $publicKey = openssl_pkey_get_details($key)['key'];
+
+        // a forged token signed with HS256 and the public key (which is not a secret) as the HMAC key
+        $token = JWT::encode(['name' => 'admin', 'owner' => 'built-in', 'exp' => time() + 3600], $publicKey, 'HS256');
+
+        $client = new Client('http://localhost:8000', 'id', 'secret', $publicKey, 'built-in', 'app-built-in');
+
+        $this->expectException(CasdoorException::class);
+        $client->parseJwtToken($token);
+    }
+
     public function testParseInvalidJwtToken(): void
     {
         $client = new Client('http://localhost:8000', 'id', 'secret', 'cert', 'built-in', 'app-built-in');
